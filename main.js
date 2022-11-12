@@ -3,26 +3,87 @@ const canvasSize = { width: 628, height: 500 };
 const waterColor = "#e4f1f7";
 const landColor = "#969696";
 
-const segments = ["R", "C", "K", "AL", "A", "L", "M", "O"]
+const segments = {
+  R: {
+    name: "Richmond Line",
+    stations: ["rich", "deln", "plza", "nbrk", "dbrk", "ashb"],
+    connections: { K: "mcar" },
+  },
+  C: {
+    name: "Concord Line",
+    stations: ["pitt", "ncon", "conc", "phil", "wcrk", "lafy", "orin", "rock"],
+    connections: { K: "mcar", eBART: "pctr" },
+  },
+  eBART: {
+    name: "eBART Line",
+    stations: ["antc", "pctr"],
+    connections: { C: "pitt" },
+  },
+  K: {
+    name: "Downtown Oakland Line",
+    stations: ["mcar", "19th", "12th"],
+    connections: { R: "ashb", C: "rock", M: "woak", AL: "lake" },
+  },
+  AL: {
+    name: "Alameda/Livermore Interline",
+    stations: ["lake", "ftvl", "cols", "sanl", "bayf"],
+    connections: { K: "12th", M: "woak", A: "hayw", L: "cast", O: "oakl" },
+  },
+  A: {
+    name: "Alameda Line",
+    stations: ["hayw", "shay", "ucty", "frmt", "warm", "mlpt", "bery"],
+    connections: { AL: "bayf" },
+  },
+  L: {
+    name: "Livermore Line",
+    stations: ["cast", "wdub", "dubl"],
+    connections: { AL: "bayf" },
+  },
+  M: {
+    name: "Market/Mission Line",
+    stations: ["woak", "embr", "mont", "powl", "civc", "16th", "24th", "glen", "balb", "daly"],
+    connections: { K: "12th", AL: "lake", SM: "colm" },
+  },
+  SM: {
+    name: "San Mateo Line",
+    stations: ["colm", "ssan", "sbrn"],
+    connections: { M: "daly" },
+  },
+  SFO: {
+    name: "SFO Line",
+    stations: ["sfia"],
+    connections: { SM: "sbrn", MLBR: "mlbr" },
+  },
+  MLBR: {
+    name: "Millbrae Line",
+    stations: ["mlbr"],
+    connections: { SM: "sbrn", SFO: "sfia" },
+  },
+  OAK: {
+    name: "OAK Airtrain",
+    stations: ["oakl"],
+    connections: { AL: "cols" },
+  },
+};
 
 const lines = [{
   color: "Orange",
   segments: ["R", "K", "AL", "A"],
 }, {
   color: "Yellow",
-  segments: ["C", "K", "M"],
+  segments: ["C", "eBART", "K", "M", "SM", "SFO"],
 }, {
   color: "Blue",
-  segments: ["M", "K", "AL", "L"],
+  segments: ["M", "AL", "L"],
 }, {
   color: "Red",
-  segments: ["R", "K", "M"],
+  segments: ["R", "K", "M", "SM", "MLBR"],
 }, {
   color: "Green",
-  segments: ["M", "K", "AL", "A"],
+  segments: ["M", "AL", "A"],
 }, {
   color: "Beige",
-  segments: ["O"],
+  segments: ["OAK"],
 }];
 
 const landforms = [{
@@ -96,7 +157,6 @@ const landforms = [{
 const stations = {
   ["12th"]: {
     name: "12th St. Oakland City Center",
-    segment: "K",
     links: [
       { station: "19th", time: 0, distance: 0 },
       { station: "woak", time: 0, distance: 0 },
@@ -106,7 +166,6 @@ const stations = {
   },
   ["16th"]: {
     name: "16th St. Mission",
-    segment: "M",
     links: [
       { station: "civc", time: 0, distance: 0 },
       { station: "24th", time: 0, distance: 0 },
@@ -115,7 +174,6 @@ const stations = {
   },
   ["19th"]: {
     name: "19th St. Oakland",
-    segment: "K",
     links: [
       { station: "12th", time: 0, distance: 0 },
       { station: "mcar", time: 0, distance: 0 },
@@ -124,7 +182,6 @@ const stations = {
   },
   ["24th"]: {
     name: "24th St. Mission",
-    segment: "M",
     links: [
       { station: "16th", time: 0, distance: 0 },
       { station: "glen", time: 0, distance: 0 },
@@ -133,7 +190,6 @@ const stations = {
   },
   antc: {
     name: "Antioch",
-    segment: "C",
     links: [
       { station: "pctr", time: 0, distance: 0 },
     ],
@@ -141,7 +197,6 @@ const stations = {
   },
   ashb: {
     name: "Ashby",
-    segment: "R",
     links: [
       { station: "mcar", time: 0, distance: 0 },
       { station: "dbrk", time: 0, distance: 0 },
@@ -150,7 +205,6 @@ const stations = {
   },
   balb: {
     name: "Balboa Park",
-    segment: "M",
     links: [
       { station: "glen", time: 0, distance: 0 },
       { station: "daly", time: 0, distance: 0 },
@@ -159,7 +213,6 @@ const stations = {
   },
   bayf: {
     name: "Bay Fair",
-    segment: "AL",
     links: [
       { station: "cast", time: 0, distance: 0 },
       { station: "sanl", time: 0, distance: 0 },
@@ -169,7 +222,6 @@ const stations = {
   },
   bery: {
     name: "Berryessa / North San José",
-    segment: "A",
     links: [
       { station: "mlpt", time: 0, distance: 0 },
     ],
@@ -177,7 +229,6 @@ const stations = {
   },
   cast: {
     name: "Castro Valley",
-    segment: "L",
     links: [
       { station: "bayf", time: 0, distance: 0 },
       { station: "wdub", time: 0, distance: 0 },
@@ -186,7 +237,6 @@ const stations = {
   },
   civc: {
     name: "Civic Center / UN Plaza",
-    segment: "M",
     links: [
       { station: "powl", time: 0, distance: 0 },
       { station: "16th", time: 0, distance: 0 },
@@ -195,7 +245,6 @@ const stations = {
   },
   cols: {
     name: "Coliseum",
-    segment: "AL",
     links: [
       { station: "ftvl", time: 0, distance: 0 },
       { station: "sanl", time: 0, distance: 0 },
@@ -205,7 +254,6 @@ const stations = {
   },
   colm: {
     name: "Colma",
-    segment: "M",
     links: [
       { station: "daly", time: 0, distance: 0 },
       { station: "ssan", time: 0, distance: 0 },
@@ -214,7 +262,6 @@ const stations = {
   },
   conc: {
     name: "Concord",
-    segment: "C",
     links: [
       { station: "ncon", time: 0, distance: 0 },
       { station: "phil", time: 0, distance: 0 },
@@ -223,7 +270,6 @@ const stations = {
   },
   daly: {
     name: "Daly City",
-    segment: "M",
     links: [
       { station: "balb", time: 0, distance: 0 },
       { station: "colm", time: 0, distance: 0 },
@@ -232,7 +278,6 @@ const stations = {
   },
   dbrk: {
     name: "Downtown Berkeley",
-    segment: "R",
     links: [
       { station: "ashb", time: 0, distance: 0 },
       { station: "nbrk", time: 0, distance: 0 },
@@ -241,7 +286,6 @@ const stations = {
   },
   dubl: {
     name: "Dublin / Pleasanton",
-    segment: "L",
     links: [
       { station: "wdub", time: 0, distance: 0 },
     ],
@@ -249,7 +293,6 @@ const stations = {
   },
   deln: {
     name: "El Cerrito del Norte",
-    segment: "R",
     links: [
       { station: "rich", time: 0, distance: 0 },
       { station: "plza", time: 0, distance: 0 },
@@ -258,7 +301,6 @@ const stations = {
   },
   plza: {
     name: "El Cerrito Plaza",
-    segment: "R",
     links: [
       { station: "deln", time: 0, distance: 0 },
       { station: "nbrk", time: 0, distance: 0 },
@@ -267,7 +309,6 @@ const stations = {
   },
   embr: {
     name: "Embarcadero",
-    segment: "M",
     links: [
       { station: "woak", time: 0, distance: 0 },
       { station: "mont", time: 0, distance: 0 },
@@ -276,7 +317,6 @@ const stations = {
   },
   frmt: {
     name: "Fremont",
-    segment: "A",
     links: [
       { station: "ucty", time: 0, distance: 0 },
       { station: "warm", time: 0, distance: 0 },
@@ -285,7 +325,6 @@ const stations = {
   },
   ftvl: {
     name: "Fruitvale",
-    segment: "AL",
     links: [
       { station: "lake", time: 0, distance: 0 },
       { station: "cols", time: 0, distance: 0 },
@@ -294,7 +333,6 @@ const stations = {
   },
   glen: {
     name: "Glen Park",
-    segment: "M",
     links: [
       { station: "24th", time: 0, distance: 0 },
       { station: "balb", time: 0, distance: 0 },
@@ -303,7 +341,6 @@ const stations = {
   },
   hayw: {
     name: "Hayward",
-    segment: "A",
     links: [
       { station: "bayf", time: 0, distance: 0 },
       { station: "shay", time: 0, distance: 0 },
@@ -312,7 +349,6 @@ const stations = {
   },
   lafy: {
     name: "Lafayette",
-    segment: "C",
     links: [
       { station: "orin", time: 0, distance: 0 },
       { station: "wcrk", time: 0, distance: 0 },
@@ -321,7 +357,6 @@ const stations = {
   },
   lake: {
     name: "Lake Merritt",
-    segment: "AL",
     links: [
       { station: "12th", time: 0, distance: 0 },
       { station: "woak", time: 0, distance: 0 },
@@ -331,7 +366,6 @@ const stations = {
   },
   mcar: {
     name: "MacArthur",
-    segment: "K",
     links: [
       { station: "ashb", time: 0, distance: 0 },
       { station: "rock", time: 0, distance: 0 },
@@ -341,7 +375,6 @@ const stations = {
   },
   mlbr: {
     name: "Millbrae",
-    segment: "M",
     links: [
       { station: "sbrn", time: 0, distance: 0 },
       { station: "sfia", time: 0, distance: 0 },
@@ -350,7 +383,6 @@ const stations = {
   },
   mlpt: {
     name: "Milpitas",
-    segment: "A",
     links: [
       { station: "warm", time: 0, distance: 0 },
       { station: "bery", time: 0, distance: 0 },
@@ -359,7 +391,6 @@ const stations = {
   },
   mont: {
     name: "Montgomery St.",
-    segment: "M",
     links: [
       { station: "embr", time: 0, distance: 0 },
       { station: "powl", time: 0, distance: 0 },
@@ -368,7 +399,6 @@ const stations = {
   },
   nbrk: {
     name: "North Berkeley",
-    segment: "R",
     links: [
       { station: "dbrk", time: 0, distance: 0 },
       { station: "plza", time: 0, distance: 0 },
@@ -377,7 +407,6 @@ const stations = {
   },
   ncon: {
     name: "North Concord / Martinez",
-    segment: "C",
     links: [
       { station: "pitt", time: 0, distance: 0 },
       { station: "conc", time: 0, distance: 0 },
@@ -386,7 +415,6 @@ const stations = {
   },
   oakl: {
     name: "Oakland International Airport",
-    segment: "O",
     links: [
       { station: "cols", time: 0, distance: 0 },
     ],
@@ -394,7 +422,6 @@ const stations = {
   },
   orin: {
     name: "Orinda",
-    segment: "C",
     links: [
       { station: "rock", time: 0, distance: 0 },
       { station: "lafy", time: 0, distance: 0 },
@@ -403,7 +430,6 @@ const stations = {
   },
   pitt: {
     name: "Pittsburg / Bay Point",
-    segment: "C",
     links: [
       { station: "pctr", time: 0, distance: 0 },
       { station: "ncon", time: 0, distance: 0 },
@@ -412,7 +438,6 @@ const stations = {
   },
   pctr: {
     name: "Pittsburg Center",
-    segment: "C",
     links: [
       { station: "pitt", time: 0, distance: 0 },
       { station: "antc", time: 0, distance: 0 },
@@ -421,7 +446,6 @@ const stations = {
   },
   phil: {
     name: "Pleasant Hill / Contra Costa Centre",
-    segment: "C",
     links: [
       { station: "conc", time: 0, distance: 0 },
       { station: "wcrk", time: 0, distance: 0 },
@@ -430,7 +454,6 @@ const stations = {
   },
   powl: {
     name: "Powell St.",
-    segment: "M",
     links: [
       { station: "mont", time: 0, distance: 0 },
       { station: "civc", time: 0, distance: 0 },
@@ -439,7 +462,6 @@ const stations = {
   },
   rich: {
     name: "Richmond",
-    segment: "R",
     links: [
       { station: "deln", time: 0, distance: 0 },
     ],
@@ -447,7 +469,6 @@ const stations = {
   },
   rock: {
     name: "Rockridge",
-    segment: "C",
     links: [
       { station: "orin", time: 0, distance: 0 },
       { station: "mcar", time: 0, distance: 0 },
@@ -456,7 +477,6 @@ const stations = {
   },
   sbrn: {
     name: "San Bruno",
-    segment: "M",
     links: [
       { station: "ssan", time: 0, distance: 0 },
       { station: "sfia", time: 0, distance: 0 },
@@ -466,7 +486,6 @@ const stations = {
   },
   sfia: {
     name: "San Francisco International Airport",
-    segment: "M",
     links: [
       { station: "mlbr", time: 0, distance: 0 },
       { station: "sbrn", time: 0, distance: 0 },
@@ -475,7 +494,6 @@ const stations = {
   },
   sanl: {
     name: "San Leandro",
-    segment: "AL",
     links: [
       { station: "bayf", time: 0, distance: 0 },
       { station: "cols", time: 0, distance: 0 },
@@ -484,7 +502,6 @@ const stations = {
   },
   shay: {
     name: "South Hayward",
-    segment: "A",
     links: [
       { station: "hayw", time: 0, distance: 0 },
       { station: "ucty", time: 0, distance: 0 },
@@ -493,7 +510,6 @@ const stations = {
   },
   ssan: {
     name: "South San Francisco",
-    segment: "M",
     links: [
       { station: "sbrn", time: 0, distance: 0 },
       { station: "colm", time: 0, distance: 0 },
@@ -502,7 +518,6 @@ const stations = {
   },
   ucty: {
     name: "Union City",
-    segment: "A",
     links: [
       { station: "shay", time: 0, distance: 0 },
       { station: "frmt", time: 0, distance: 0 },
@@ -511,7 +526,6 @@ const stations = {
   },
   wcrk: {
     name: "Walnut Creek",
-    segment: "C",
     links: [
       { station: "phil", time: 0, distance: 0 },
       { station: "lafy", time: 0, distance: 0 },
@@ -520,7 +534,6 @@ const stations = {
   },
   warm: {
     name: "Warm Springs",
-    segment: "A",
     links: [
       { station: "mlpt", time: 0, distance: 0 },
       { station: "frmt", time: 0, distance: 0 },
@@ -529,7 +542,6 @@ const stations = {
   },
   wdub: {
     name: "West Dublin / Pleasanton",
-    segment: "L",
     links: [
       { station: "dubl", time: 0, distance: 0 },
       { station: "cast", time: 0, distance: 0 },
@@ -538,7 +550,6 @@ const stations = {
   },
   woak: {
     name: "West Oakland",
-    segment: "M",
     links: [
       { station: "12th", time: 0, distance: 0 },
       { station: "lake", time: 0, distance: 0 },
@@ -546,7 +557,7 @@ const stations = {
     ],
     location: { x: .370, y: .439 },
   },
-}
+};
 
 function dataCheck() {
   for (const [code, { name, links }] of Object.entries(stations)) {
@@ -619,13 +630,16 @@ const drawMap = (map, state) => {
   });
   
   // draw station circles
+  // if no selected segment, highlight nothing
+  const highlightStations = segments[state.selectedSegment]?.stations ?? [];
+  
   Object.entries(stations).forEach(([code, station]) => {
     const {x, y} = convertPoint(station.location);
     
     context.beginPath();
     
-    if(state.selectedSegment === station.segment) {
-      context.fillStyle = "#ccc";
+    if(highlightStations.includes(code)) {
+      context.fillStyle = "cornflowerblue";
       context.strokeStyle = "black";
       
       context.lineWidth = 2;
@@ -647,6 +661,115 @@ const drawMap = (map, state) => {
   context.closePath();
 };
 
+const buildTable = (linesArea, state, repaint) => {
+  // build column groups
+  const colgroup = linesArea.querySelectorAll("table colgroup")[0];
+  
+  // two unused header groups to start (these are the index and line color)
+  colgroup.append(document.createElement("col"));
+  colgroup.append(document.createElement("col"));
+  
+  // and one group for each of the segments
+  // keep a reference to these for later lookup
+  const colgroups = {};
+  Object.keys(segments).forEach(key => {
+    const column = document.createElement("col");
+    column.id = key;
+    colgroup.append(column);
+    
+    colgroups[key] = column;
+  });
+  
+  // build headers
+  const thead = linesArea.querySelectorAll("table thead")[0];
+  
+  // top header; mostly static, but with the "line segments" colspan
+  const topHeader = document.createElement("tr");
+  {
+    // in a block for scoping convenience
+    
+    let header = document.createElement("th");
+    header.rowSpan = 2;
+    topHeader.append(header);
+    
+    header = document.createElement("th");
+    header.rowSpan = 2;
+    header.textContent = "Line Color";
+    topHeader.append(header);
+    
+    header = document.createElement("th");
+    header.colSpan = Object.keys(segments).length;
+    header.style = "background: white;";
+    header.textContent = "Line Segments";
+    topHeader.append(header);
+  }
+  thead.append(topHeader);
+
+  // subheader, one for each segment
+  const subheader = document.createElement("tr");
+  
+  Object.entries(segments).forEach(([key, { name }]) => {
+    const anchor = document.createElement("a");
+    anchor.textContent = key;
+    anchor.title = name;
+    
+    const header = document.createElement("th");
+    header.style = "font-size: .7em; width: 60px;";
+    header.append(anchor);
+    
+    const colgroup = colgroups[key];
+    
+    header.onmouseover = event => {
+      colgroup.className = "selectedColumn";
+      header.className = "selectedColumn";
+      
+      state.selectedSegment = key;
+      
+      repaint();
+    };
+    
+    header.onmouseout = event => {
+      colgroup.className = "";
+      header.className = "";
+      
+      state.selectedSegment = undefined;
+      
+      repaint();
+    };
+    
+    subheader.append(header);
+  });
+  
+  thead.append(subheader);
+  
+  // lines in table body
+  const tableBody = linesArea.querySelectorAll("table tbody")[0];
+  
+  lines.forEach((line, index) => {    
+    const row = document.createElement("tr");
+    
+    const sequence = document.createElement("td");
+    sequence.append(`${index+1}`);
+    row.append(sequence);
+    
+    const color = document.createElement("td");
+    color.append(line.color);
+    row.append(color);
+    
+    Object.keys(segments).forEach(segment => {
+      const hasSegment = document.createElement("td");
+      
+      if(line.segments.includes(segment)) {
+        hasSegment.append("Y");
+      }
+      
+      row.append(hasSegment);
+    });
+    
+    tableBody.append(row);
+  });
+};
+
 function main() {
   const state = {
     selectedSegment: undefined,
@@ -660,51 +783,8 @@ function main() {
     drawMap(map, state);
   };
   
-  // TABLE
-  
-  segments.forEach(segment => {
-    const header = document.getElementById(segment);
-    
-    header.onmouseover = event => {
-      state.selectedSegment = segment;
-      
-      repaint();
-    };
-    
-    header.onmouseout = event => {
-      state.selectedSegment = undefined;
-      
-      repaint();
-    };
-  });
-  
-  // lines in table body
-  const tableBody = document.getElementById("lines")
-                            .getElementsByTagName("tbody")[0];
-  
-  lines.forEach((line, index) => {    
-    const row = document.createElement("tr");
-    
-    const sequence = document.createElement("td");
-    sequence.append(`${index+1}`);
-    row.append(sequence);
-    
-    const color = document.createElement("td");
-    color.append(line.color);
-    row.append(color);
-    
-    segments.forEach(segment => {
-      const hasSegment = document.createElement("td");
-      
-      if(line.segments.includes(segment)) {
-        hasSegment.append("Y");
-      }
-      
-      row.append(hasSegment);
-    });
-    
-    tableBody.append(row);
-  });
+  const linesArea = document.getElementById("lines");
+  buildTable(linesArea, state, repaint);
   
   // draw in canvas
   repaint();

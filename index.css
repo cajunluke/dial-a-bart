@@ -39,7 +39,7 @@ footer {
 /**** LINES ****/
 
 #lines table {
-  max-width: 600px;
+  /* max-width: 600px; */
   margin: 0;
   display: block;
   overflow-x: auto;
@@ -57,7 +57,7 @@ footer {
   width: 5rem;
 }
 
-#lines th.segment:hover {
+#lines .selectedColumn {
   background: #81acf0;
 }
 
@@ -71,11 +71,6 @@ footer {
   border-top-width: 0;
   border-left-width: 0;
   text-align: center;
-}
-
-#lines th {
-  background: white;
-  vertical-align: center;
 }
 
 /**** MAP ****/
