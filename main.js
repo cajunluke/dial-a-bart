@@ -1,5 +1,8 @@
 const canvasSize = { width: 628, height: 500 };
 
+const waterColor = "#e4f1f7";
+const landColor = "#969696";
+
 const segments = ["R", "C", "K", "AL", "A", "L", "M", "O"]
 
 const lines = [{
@@ -20,6 +23,74 @@ const lines = [{
 }, {
   color: "Beige",
   segments: ["O"],
+}];
+
+const landforms = [{
+  name: "bay area",
+  color: waterColor,
+  path: [
+    { x: .085, y: .000 },
+    { x: .085, y: .111 },
+    { x: .154, y: .201 },
+    { x: .154, y: .233 },
+    { x: .184, y: .278 },
+    { x: .153, y: .325 },
+    { x: .086, y: .325 },
+    { x: .041, y: .272 },
+    { x: .016, y: .272 },
+    { x: .000, y: .251 },
+    { x: .000, y: 1.00 },
+    { x: .171, y: 1.00 },
+    { x: .171, y: .946 },
+    { x: .123, y: .887 },
+    { x: .123, y: .817 },
+    { x: .075, y: .757 },
+    { x: .075, y: .521 },
+    { x: .084, y: .503 },
+    { x: .084, y: .415 },
+    { x: .125, y: .369 },
+    { x: .161, y: .369 },
+    { x: .179, y: .378 },
+    { x: .244, y: .378 },
+    { x: .322, y: .482 },
+    { x: .322, y: .599 },
+    { x: .347, y: .633 },
+    { x: .347, y: .767 },
+    { x: .382, y: .767 },
+    { x: .404, y: .797 },
+    { x: .424, y: .797 },
+    { x: .495, y: .880 },
+    { x: .561, y: .880 },
+    { x: .585, y: .854 },
+    { x: .585, y: .826 },
+    { x: .510, y: .731 },
+    { x: .510, y: .650 },
+    { x: .483, y: .617 },
+    { x: .458, y: .638 },
+    { x: .416, y: .587 },
+    { x: .416, y: .526 },
+    { x: .385, y: .487 },
+    { x: .361, y: .487 },
+    { x: .361, y: .411 },
+    { x: .369, y: .398 },
+    { x: .369, y: .354 },
+    { x: .235, y: .186 },
+    { x: .217, y: .186 },
+    { x: .191, y: .146 },
+    { x: .244, y: .074 },
+    { x: .244, y: .000 },
+  ],
+}, {
+  name: "alameda",
+  color: landColor,
+  path: [
+    { x: .373, y: .495 },
+    { x: .384, y: .495 },
+    { x: .411, y: .527 },
+    { x: .411, y: .542 },
+    { x: .401, y: .542 },
+    { x: .373, y: .507 },
+  ],
 }];
 
 const stations = {
@@ -514,14 +585,42 @@ function dataCheck() {
   }
 }
 
+const convertPoint = ({ x, y }) => {
+  return {
+    x: Math.round(x * canvasSize.width), 
+    y: Math.round(y * canvasSize.height),
+  };
+};
+
 const drawMap = (map, state) => {
   const context = map.getContext("2d");
   
+  // clear all previous drawing
   context.clearRect(0, 0, canvasSize.width, canvasSize.height);
+  
+  // draw background
+  landforms.forEach(({ color, path }) => {
+    context.beginPath();
+    context.fillStyle = color;
+    context.lineWidth = 0;
+    
+    // start at the last point
+    const startPoint = convertPoint(path[path.length-1]);
+    context.moveTo(startPoint.x, startPoint.y);
+    
+    path.forEach(point => {
+      const {x, y} = convertPoint(point);
+      
+      context.lineTo(x, y);
+    });
+    
+    context.fill();
+    context.closePath();
+  });
   
   // draw station circles
   Object.entries(stations).forEach(([code, station]) => {
-    const {x, y} = station.location;
+    const {x, y} = convertPoint(station.location);
     
     context.beginPath();
     
@@ -537,18 +636,16 @@ const drawMap = (map, state) => {
       context.lineWidth = 1;
     }
     
-    const xpoint = x * canvasSize.width;
-    const ypoint = y * canvasSize.height;
-    
-    context.ellipse(xpoint, ypoint, 5, 5, 0, 0, 2 * Math.PI);
+    context.ellipse(x, y, 5, 5, 0, 0, 2 * Math.PI);
     context.fill();
     context.stroke();
     
     context.lineWidth = 1;
     context.font = "11px sans-serif";
-    context.strokeText(code, xpoint + 10, ypoint + 4)
+    context.strokeText(code, x + 10, y + 4)
   });
-}
+  context.closePath();
+};
 
 function main() {
   const state = {
