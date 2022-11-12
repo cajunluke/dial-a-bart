@@ -36,20 +36,50 @@ footer {
   grid-area: footer;
 }
 
-main div {
-  border: 2px dotted red;
-}
-
 /**** LINES ****/
 
-#lines {
-  background: #eee;
+#lines table {
+  max-width: 600px;
+  margin: 0;
+  display: block;
+  overflow-x: auto;
+  border-spacing: 0;
+  border-top: 1px solid #5555;
+  border-left: 1px solid #5555;
+}
+
+#lines th,
+#lines td {
+  border: 1px solid #5555;
+}
+
+#lines th {
+  width: 5rem;
+}
+
+#lines tbody {
+  white-space: nowrap;
+}
+
+#lines th,
+#lines td {
+  padding: 5px 10px;
+  border-top-width: 0;
+  border-left-width: 0;
+  text-align: center;
+}
+
+#lines th {
+  background: white;
+  vertical-align: center;
 }
 
 /**** MAP ****/
 
-#map {
-  background: #eee;
+#map .frame {
+  margin: 1rem;
+  border: 2px outset #848484c9;
+  background: #e4f1f7;
 }
 
 /**** TIMINGS ****/
