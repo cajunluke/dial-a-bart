@@ -1,0 +1,72 @@
+body {
+  font-family: 'Helvetica', 'Open Sans', sans-serif;
+  font-weight: 300;
+  background-color: white;
+  color: black;
+}
+
+/**** LAYOUT ****/
+
+body {
+  display: grid;
+  grid-template:
+    "head head"     auto
+    "lines map"     auto
+    "timings map"   auto
+    "footer footer" auto / 1fr 1fr;
+}
+
+header {
+  grid-area: head;
+}
+
+#lines {
+  grid-area: lines; 
+}
+
+#map {
+  grid-area: map;
+}
+
+#timings {
+  grid-area: timings;
+}
+
+footer {
+  grid-area: footer;
+}
+
+main div {
+  border: 2px dotted red;
+}
+
+/**** LINES ****/
+
+#lines {
+  background: #eee;
+}
+
+/**** MAP ****/
+
+#map {
+  background: #eee;
+}
+
+/**** TIMINGS ****/
+
+#timings {
+  background: #eee;
+}
+
+/**** FOOTER ****/
+
+footer {
+  padding: 2em;
+
+  /*background-color: #d9e8f6;*/
+  font-size: 0.8rem;
+}
+
+footer p {
+  margin: 2px;
+}
