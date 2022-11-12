@@ -57,6 +57,10 @@ footer {
   width: 5rem;
 }
 
+#lines th.segment:hover {
+  background: #81acf0;
+}
+
 #lines tbody {
   white-space: nowrap;
 }

@@ -514,23 +514,74 @@ function dataCheck() {
   }
 }
 
-const drawMap = map => {
+const drawMap = (map, state) => {
   const context = map.getContext("2d");
   
+  context.clearRect(0, 0, canvasSize.width, canvasSize.height);
+  
   // draw station circles
-  Object.values(stations).forEach(station => {
+  Object.entries(stations).forEach(([code, station]) => {
     const {x, y} = station.location;
     
     context.beginPath();
-    context.fillStyle = "white";
-    context.strokeStyle = "black";
-    context.ellipse(x * canvasSize.width, y * canvasSize.height, 5, 5, 0, 0, 2 * Math.PI);
+    
+    if(state.selectedSegment === station.segment) {
+      context.fillStyle = "#ccc";
+      context.strokeStyle = "black";
+      
+      context.lineWidth = 2;
+    } else {
+      context.fillStyle = "white";
+      context.strokeStyle = "black";
+      
+      context.lineWidth = 1;
+    }
+    
+    const xpoint = x * canvasSize.width;
+    const ypoint = y * canvasSize.height;
+    
+    context.ellipse(xpoint, ypoint, 5, 5, 0, 0, 2 * Math.PI);
+    context.fill();
     context.stroke();
+    
+    context.lineWidth = 1;
+    context.font = "11px sans-serif";
+    context.strokeText(code, xpoint + 10, ypoint + 4)
   });
 }
 
 function main() {
-  // fill table
+  const state = {
+    selectedSegment: undefined,
+  };
+  
+  const map = document.getElementById("bartmap");
+  map.width = canvasSize.width;
+  map.height = canvasSize.height;
+  
+  const repaint = () => {
+    drawMap(map, state);
+  };
+  
+  // TABLE
+  
+  segments.forEach(segment => {
+    const header = document.getElementById(segment);
+    
+    header.onmouseover = event => {
+      state.selectedSegment = segment;
+      
+      repaint();
+    };
+    
+    header.onmouseout = event => {
+      state.selectedSegment = undefined;
+      
+      repaint();
+    };
+  });
+  
+  // lines in table body
   const tableBody = document.getElementById("lines")
                             .getElementsByTagName("tbody")[0];
   
@@ -559,8 +610,7 @@ function main() {
   });
   
   // draw in canvas
-  const map = document.getElementById("bartmap");
-  drawMap(map);
+  repaint();
 }
 
 dataCheck();
