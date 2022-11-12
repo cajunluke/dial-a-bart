@@ -1,3 +1,5 @@
+const canvasSize = { width: 628, height: 500 };
+
 const segments = ["R", "C", "K", "AL", "A", "L", "M", "O"]
 
 const lines = [{
@@ -522,7 +524,7 @@ const drawMap = map => {
     context.beginPath();
     context.fillStyle = "white";
     context.strokeStyle = "black";
-    context.ellipse(x * 628, y * 500, 5, 5, 0, 0, 2 * Math.PI);
+    context.ellipse(x * canvasSize.width, y * canvasSize.height, 5, 5, 0, 0, 2 * Math.PI);
     context.stroke();
   });
 }
