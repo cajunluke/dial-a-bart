@@ -1,38 +1,28 @@
-const canvasSize = { width: 628, height: 500 };
+const canvasSize = { width: 700, height: 557 };
 
 const waterColor = "#e4f1f7";
 const landColor = "#969696";
 
 const segments = {
-  R: {
-    name: "Richmond Line",
-    stations: ["rich", "deln", "plza", "nbrk", "dbrk", "ashb"],
-    connections: { K: "mcar" },
+  AL: {
+    name: "Alameda/Livermore Interline",
+    stations: ["lake", "ftvl", "cols", "sanl", "bayf"],
+    connections: { K: "12th", M: "woak", A: "hayw", L: "cast" },
+  },
+  A: {
+    name: "Alameda Line",
+    stations: ["hayw", "shay", "ucty", "frmt"],
+    connections: { AL: "bayf", S: "warm" },
   },
   C: {
     name: "Concord Line",
     stations: ["pitt", "ncon", "conc", "phil", "wcrk", "lafy", "orin", "rock"],
-    connections: { K: "mcar", eBART: "pctr" },
-  },
-  eBART: {
-    name: "eBART Line",
-    stations: ["antc", "pctr"],
-    connections: { C: "pitt" },
+    connections: { K: "mcar", E: "pctr" },
   },
   K: {
     name: "Downtown Oakland Line",
     stations: ["mcar", "19th", "12th"],
     connections: { R: "ashb", C: "rock", M: "woak", AL: "lake" },
-  },
-  AL: {
-    name: "Alameda/Livermore Interline",
-    stations: ["lake", "ftvl", "cols", "sanl", "bayf"],
-    connections: { K: "12th", M: "woak", A: "hayw", L: "cast", O: "oakl" },
-  },
-  A: {
-    name: "Alameda Line",
-    stations: ["hayw", "shay", "ucty", "frmt", "warm", "mlpt", "bery"],
-    connections: { AL: "bayf" },
   },
   L: {
     name: "Livermore Line",
@@ -42,48 +32,64 @@ const segments = {
   M: {
     name: "Market/Mission Line",
     stations: ["woak", "embr", "mont", "powl", "civc", "16th", "24th", "glen", "balb", "daly"],
-    connections: { K: "12th", AL: "lake", SM: "colm" },
+    connections: { K: "12th", AL: "lake", W: "colm" },
   },
-  SM: {
+  R: {
+    name: "Richmond Line",
+    stations: ["rich", "deln", "plza", "nbrk", "dbrk", "ashb"],
+    connections: { K: "mcar" },
+  },
+  S: {
+    name: "South Alameda/Santa Clara Line",
+    stations: ["warm", "mlpt", "bery"],
+    connections: { A: "frmt" },
+  },
+  W: {
     name: "San Mateo Line",
-    stations: ["colm", "ssan", "sbrn"],
+    stations: ["colm", "ssan", "sbrn", "mlbr"],
     connections: { M: "daly" },
   },
-  SFO: {
+  Y: {
     name: "SFO Line",
     stations: ["sfia"],
-    connections: { SM: "sbrn", MLBR: "mlbr" },
+    connections: { W: "sbrn", W: "mlbr" },
   },
-  MLBR: {
-    name: "Millbrae Line",
-    stations: ["mlbr"],
-    connections: { SM: "sbrn", SFO: "sfia" },
+  E: {
+    name: "eBART Line",
+    stations: ["antc", "pctr"],
+    connections: { C: "pitt" },
   },
-  OAK: {
+  H: {
+    // not a mainline bart line, so it gets special handling
     name: "OAK Airtrain",
-    stations: ["oakl"],
-    connections: { AL: "cols" },
+    stations: ["oakl", "cols"],
   },
 };
 
 const lines = [{
-  color: "Orange",
-  segments: ["R", "K", "AL", "A"],
+  name: "Orange",
+  color: "#f8a51a",
+  segments: ["R", "K", "AL", "A", "S"],
 }, {
-  color: "Yellow",
-  segments: ["C", "eBART", "K", "M", "SM", "SFO"],
+  name: "Yellow",
+  color: "#ffe802",
+  segments: ["C", "E", "K", "M", "W", "Y"],
 }, {
-  color: "Blue",
+  name: "Blue",
+  color: "#01aced",
   segments: ["M", "AL", "L"],
 }, {
-  color: "Red",
-  segments: ["R", "K", "M", "SM", "MLBR"],
+  name: "Red",
+  color: "#ec1c23",
+  segments: ["R", "K", "M", "W"],
 }, {
-  color: "Green",
-  segments: ["M", "AL", "A"],
+  name: "Green",
+  color: "#4db947",
+  segments: ["M", "AL", "A", "S"],
 }, {
-  color: "Beige",
-  segments: ["OAK"],
+  name: "Beige",
+  color: "#a8a280",
+  segments: ["H"],
 }];
 
 const landforms = [{
@@ -170,7 +176,7 @@ const stations = {
       { station: "civc", time: 0, distance: 0 },
       { station: "24th", time: 0, distance: 0 },
     ],
-    location: { x: .218, y: .568 },
+    location: { x: .218, y: .566 },
   },
   ["19th"]: {
     name: "19th St. Oakland",
@@ -186,7 +192,7 @@ const stations = {
       { station: "16th", time: 0, distance: 0 },
       { station: "glen", time: 0, distance: 0 },
     ],
-    location: { x: .218, y: .594 },
+    location: { x: .218, y: .593 },
   },
   antc: {
     name: "Antioch",
@@ -209,7 +215,7 @@ const stations = {
       { station: "glen", time: 0, distance: 0 },
       { station: "daly", time: 0, distance: 0 },
     ],
-    location: { x: .218, y: .649 },
+    location: { x: .218, y: .651 },
   },
   bayf: {
     name: "Bay Fair",
@@ -250,7 +256,7 @@ const stations = {
       { station: "sanl", time: 0, distance: 0 },
       { station: "oakl", time: 0, distance: 0 },
     ],
-    location: { x: .473, y: .531 },
+    location: { x: .473, y: .533 },
   },
   colm: {
     name: "Colma",
@@ -337,7 +343,7 @@ const stations = {
       { station: "24th", time: 0, distance: 0 },
       { station: "balb", time: 0, distance: 0 },
     ],
-    location: { x: .218, y: .623 },
+    location: { x: .218, y: .622 },
   },
   hayw: {
     name: "Hayward",
@@ -353,7 +359,7 @@ const stations = {
       { station: "orin", time: 0, distance: 0 },
       { station: "wcrk", time: 0, distance: 0 },
     ],
-    location: { x: .476, y: .226 },
+    location: { x: .474, y: .224 },
   },
   lake: {
     name: "Lake Merritt",
@@ -450,7 +456,7 @@ const stations = {
       { station: "conc", time: 0, distance: 0 },
       { station: "wcrk", time: 0, distance: 0 },
     ],
-    location: { x: .520, y: .171 },
+    location: { x: .518, y: .171 },
   },
   powl: {
     name: "Powell St.",
@@ -506,7 +512,7 @@ const stations = {
       { station: "hayw", time: 0, distance: 0 },
       { station: "ucty", time: 0, distance: 0 },
     ],
-    location: { x: .596, y: .689 },
+    location: { x: .598, y: .689 },
   },
   ssan: {
     name: "South San Francisco",
@@ -530,7 +536,7 @@ const stations = {
       { station: "phil", time: 0, distance: 0 },
       { station: "lafy", time: 0, distance: 0 },
     ],
-    location: { x: .496, y: .199 },
+    location: { x: .497, y: .196 },
   },
   warm: {
     name: "Warm Springs",
@@ -596,11 +602,165 @@ function dataCheck() {
   }
 }
 
+function precomputeStations() {
+  lines.forEach(line => {
+    const lineStations = line.segments
+                             .map(segment => segments[segment])
+                             .flatMap(segment => segment.stations);
+    
+    // need to find an endpoint and sort stations along line
+    
+    // pre-populate `nodes` with objects for each station
+    const nodes = {};
+    lineStations.forEach(station => {
+      nodes[station] = {
+        adjacent: [],
+      };
+    });
+    
+    // bart doesn't have cycles, so I didn't bother checking for that
+    // also *one* of the ends has to be a terminal station, so no trying to simulate short-turns like 24th-pctr
+    
+    // this will be the first endpoint we find
+    let endpoint = undefined;
+    lineStations.forEach(station => {
+      const { links = [] } = stations[station];
+      
+      if(links.length === 0) {
+        // not sure how we got here; go to next
+        return;
+      }
+      
+      if(links.length === 1 && endpoint === undefined) {
+        // this is a terminal station and we haven't found an endpoint yet; this is our end
+        endpoint = station;
+      }
+      
+      links.forEach(link => {
+        // if this link is in the station list
+        if(nodes[link.station]) {
+          nodes[station].adjacent.push(link.station);
+        }
+      });
+    });
+    
+    // our output data structure
+    line.stations = [];
+    
+    // the endpoint comes first
+    line.stations.push(endpoint);
+    
+    // declare it to be our initial node
+    let currentNode = nodes[endpoint];
+    // and remove it from the nodes collection
+    delete nodes[endpoint];
+    
+    // while nodes reamin, find the next node and travel there
+    while(Object.keys(nodes).length > 0) {
+      const availables = currentNode.adjacent.filter(link => Object.keys(nodes).includes(link));
+      const nextStation = availables[0];
+      
+      // put this as the next station in the list
+      line.stations.push(nextStation);
+      
+      // set it as next node
+      currentNode = nodes[nextStation];
+      // and remove it from the nodes collection
+      delete nodes[nextStation];
+    }
+  });
+  
+  lines.forEach(line => {
+    line.stations.forEach(station => {
+      const { visitingLines = 0 } = stations[station];
+      
+      stations[station].visitingLines = visitingLines + 1;
+    });
+  });
+}
+
 const convertPoint = ({ x, y }) => {
   return {
     x: Math.round(x * canvasSize.width), 
     y: Math.round(y * canvasSize.height),
   };
+};
+
+const drawLines = (context, lines, state) => {
+  // map<string, int> counting lines currently visited
+  const visitedLines = {};
+  
+  lines.forEach((line, index) => {
+    context.beginPath();
+    context.strokeStyle = line.color;
+    context.lineWidth = 3;
+    
+    const points = line.stations.map(station => {
+      const { location, visitingLines } = stations[station];
+      
+      const point = convertPoint(location);
+      
+      if(visitingLines === 1) {
+        // one line visiting means no offset needed
+        return point;
+      }
+      
+      // get and increment visitedLines for this station
+      const alreadyVisited = visitedLines[station] ?? 0;
+      visitedLines[station] = alreadyVisited + 1;
+      
+      // offset line by how many have already been here
+      // TODO fancy algorithm
+      
+      // also TODO slanted lines should be offset by pythagoras
+      
+      const increment = 3 * alreadyVisited;
+      
+      if(visitingLines === 2) {
+        // offset by half a linewidth
+        // hard-coded because it's shit anyway
+        
+        return {
+          x: (point.x - 1.5) + increment,
+          y: point.y,
+        };
+      }
+      
+      if(visitingLines === 3) {
+        // offset by whole linewidth
+        // hard-coded because it's shit anyway
+        
+        return {
+          x: (point.x - 3) + increment,
+          y: point.y,
+        };
+      }
+      
+      if(visitingLines === 4) {
+        // offset by half again linewidth
+        // hard-coded because it's shit anyway
+        
+        return {
+          x: (point.x - 4.5) + increment,
+          y: point.y,
+        };
+      }
+    });
+    
+    // const points = line.stations.map(station => stations[station])
+    //                             .map(station => station.location)
+    //                             .map(point => convertPoint(point));
+                       
+    const startPoint = points[0];
+    context.moveTo(startPoint.x, startPoint.y);
+    
+    points.forEach(({x, y}) => {
+      context.lineTo(x, y);
+    });
+    
+    context.stroke();
+    context.closePath();
+  });
 };
 
 const drawMap = (map, state) => {
@@ -629,6 +789,9 @@ const drawMap = (map, state) => {
     context.closePath();
   });
   
+  // draw lines
+  drawLines(context, lines, state);
+  
   // draw station circles
   // if no selected segment, highlight nothing
   const highlightStations = segments[state.selectedSegment]?.stations ?? [];
@@ -640,15 +803,12 @@ const drawMap = (map, state) => {
     
     if(highlightStations.includes(code)) {
       context.fillStyle = "cornflowerblue";
-      context.strokeStyle = "black";
-      
-      context.lineWidth = 2;
     } else {
       context.fillStyle = "white";
-      context.strokeStyle = "black";
-      
-      context.lineWidth = 1;
     }
+    
+    context.strokeStyle = "black";
+    context.lineWidth = 1;
     
     context.ellipse(x, y, 5, 5, 0, 0, 2 * Math.PI);
     context.fill();
@@ -714,7 +874,7 @@ const buildTable = (linesArea, state, repaint) => {
     anchor.title = name;
     
     const header = document.createElement("th");
-    header.style = "font-size: .7em; width: 60px;";
+    header.style = "font-size: .7em; width: 40px;";
     header.append(anchor);
     
     const colgroup = colgroups[key];
@@ -753,7 +913,8 @@ const buildTable = (linesArea, state, repaint) => {
     row.append(sequence);
     
     const color = document.createElement("td");
-    color.append(line.color);
+    color.textContent = line.name;
+    color.style = `background: ${line.color}30;`;
     row.append(color);
     
     Object.keys(segments).forEach(segment => {
@@ -790,5 +951,12 @@ function main() {
   repaint();
 }
 
+// verify data consistency
 dataCheck();
+
+// examine the lines and build reasonable station lists
+// NOTE: this won't work for DIY lines later, but it'll be fine now
+precomputeStations();
+
+// build the page and run!
 main();
