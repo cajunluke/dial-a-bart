@@ -1,7 +1,7 @@
 const canvasSize = { width: 700, height: 557 };
 
 const waterColor = "#e4f1f7";
-const landColor = "#969696";
+const landColor = "#a6a6a6";
 
 const segments = {
   AL: {
@@ -20,7 +20,7 @@ const segments = {
     connections: { K: "mcar", E: "pctr" },
   },
   K: {
-    name: "Downtown Oakland Line",
+    name: "Downtown Oakland Line (Oakland Wye)",
     stations: ["mcar", "19th", "12th"],
     connections: { R: "ashb", C: "rock", M: "woak", AL: "lake" },
   },
@@ -747,10 +747,6 @@ const drawLines = (context, lines, state) => {
       }
     });
     
-    // const points = line.stations.map(station => stations[station])
-    //                             .map(station => station.location)
-    //                             .map(point => convertPoint(point));
-                       
     const startPoint = points[0];
     context.moveTo(startPoint.x, startPoint.y);
     
@@ -850,11 +846,13 @@ const buildTable = (linesArea, state, repaint) => {
     
     let header = document.createElement("th");
     header.rowSpan = 2;
+    header.style = "width: 4rem";
     topHeader.append(header);
     
     header = document.createElement("th");
     header.rowSpan = 2;
     header.textContent = "Line Color";
+    header.style = "width: 6rem";
     topHeader.append(header);
     
     header = document.createElement("th");
