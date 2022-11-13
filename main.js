@@ -660,6 +660,7 @@ const drawMap = (map, state) => {
   
   // draw lines
   drawLine(context, lines[0], state);
+  drawLine(context, lines[1], state);
   
   // draw station circles
   // if no selected segment, highlight nothing
