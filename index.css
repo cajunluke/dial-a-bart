@@ -76,6 +76,7 @@ footer {
 /**** MAP ****/
 
 #map .frame {
+  margin-right: 1rem;
   border: 2px outset #242424;
   background: #969696;
 }
