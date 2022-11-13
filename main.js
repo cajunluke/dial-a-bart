@@ -747,10 +747,6 @@ const drawLines = (context, lines, state) => {
       }
     });
     
-    // const points = line.stations.map(station => stations[station])
-    //                             .map(station => station.location)
-    //                             .map(point => convertPoint(point));
-                       
     const startPoint = points[0];
     context.moveTo(startPoint.x, startPoint.y);
     
