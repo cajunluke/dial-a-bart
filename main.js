@@ -846,11 +846,13 @@ const buildTable = (linesArea, state, repaint) => {
     
     let header = document.createElement("th");
     header.rowSpan = 2;
+    header.style = "width: 4rem";
     topHeader.append(header);
     
     header = document.createElement("th");
     header.rowSpan = 2;
     header.textContent = "Line Color";
+    header.style = "width: 6rem";
     topHeader.append(header);
     
     header = document.createElement("th");
