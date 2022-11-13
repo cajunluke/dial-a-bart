@@ -691,9 +691,11 @@ const drawLines = (context, lines, state) => {
   const visitedLines = {};
   
   lines.forEach((line, index) => {
+    const isSelected = state.selectedLine === index;
+    
     context.beginPath();
     context.strokeStyle = line.color;
-    context.lineWidth = 3;
+    context.lineWidth = isSelected ? 5 : 3;
     
     const points = line.stations.map(station => {
       const { location, visitingLines } = stations[station];
@@ -872,7 +874,7 @@ const buildTable = (linesArea, state, repaint) => {
     anchor.title = name;
     
     const header = document.createElement("th");
-    header.style = "font-size: .7em; width: 40px;";
+    header.style = "font-size: .7em; width: 30px;";
     header.append(anchor);
     
     const colgroup = colgroups[key];
@@ -907,7 +909,7 @@ const buildTable = (linesArea, state, repaint) => {
     const row = document.createElement("tr");
     
     const sequence = document.createElement("td");
-    sequence.append(`${index+1}`);
+    sequence.textContent = `${index+1}`;
     row.append(sequence);
     
     const color = document.createElement("td");
@@ -927,6 +929,28 @@ const buildTable = (linesArea, state, repaint) => {
       row.append(hasSegment);
     });
     
+    const mouseover = event => {
+      row.style = `background: ${line.color}50;`;
+      
+      state.selectedLine = index;
+      
+      repaint();
+    };
+    
+    sequence.onmouseover = mouseover;
+    color.onmouseover = mouseover;
+    
+    const mouseout = event => {
+      row.style = `background: unset;`;
+      
+      state.selectedLine = undefined;
+      
+      repaint();
+    };
+    
+    sequence.onmouseout = mouseout;
+    color.onmouseout = mouseout;
+    
     tableBody.append(row);
   });
 };
@@ -934,6 +958,7 @@ const buildTable = (linesArea, state, repaint) => {
 function main() {
   const state = {
     selectedSegment: undefined,
+    selectedLine: undefined,
   };
   
   const map = document.getElementById("bartmap");
