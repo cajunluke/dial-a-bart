@@ -20,7 +20,7 @@ const segments = {
     connections: { K: "mcar", E: "pctr" },
   },
   K: {
-    name: "Downtown Oakland Line",
+    name: "Downtown Oakland Line (Oakland Wye)",
     stations: ["mcar", "19th", "12th"],
     connections: { R: "ashb", C: "rock", M: "woak", AL: "lake" },
   },
