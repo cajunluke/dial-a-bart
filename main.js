@@ -1,4 +1,4 @@
-const canvasSize = { width: 628, height: 500 };
+const canvasSize = { width: 700, height: 557 };
 
 const waterColor = "#e4f1f7";
 const landColor = "#969696";
@@ -817,7 +817,7 @@ const buildTable = (linesArea, state, repaint) => {
     anchor.title = name;
     
     const header = document.createElement("th");
-    header.style = "font-size: .7em; width: 60px;";
+    header.style = "font-size: .7em; width: 40px;";
     header.append(anchor);
     
     const colgroup = colgroups[key];
