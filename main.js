@@ -4,35 +4,25 @@ const waterColor = "#e4f1f7";
 const landColor = "#969696";
 
 const segments = {
-  R: {
-    name: "Richmond Line",
-    stations: ["rich", "deln", "plza", "nbrk", "dbrk", "ashb"],
-    connections: { K: "mcar" },
+  AL: {
+    name: "Alameda/Livermore Interline",
+    stations: ["lake", "ftvl", "cols", "sanl", "bayf"],
+    connections: { K: "12th", M: "woak", A: "hayw", L: "cast" },
+  },
+  A: {
+    name: "Alameda Line",
+    stations: ["hayw", "shay", "ucty", "frmt"],
+    connections: { AL: "bayf", S: "warm" },
   },
   C: {
     name: "Concord Line",
     stations: ["pitt", "ncon", "conc", "phil", "wcrk", "lafy", "orin", "rock"],
-    connections: { K: "mcar", eBART: "pctr" },
-  },
-  eBART: {
-    name: "eBART Line",
-    stations: ["antc", "pctr"],
-    connections: { C: "pitt" },
+    connections: { K: "mcar", E: "pctr" },
   },
   K: {
     name: "Downtown Oakland Line",
     stations: ["mcar", "19th", "12th"],
     connections: { R: "ashb", C: "rock", M: "woak", AL: "lake" },
-  },
-  AL: {
-    name: "Alameda/Livermore Interline",
-    stations: ["lake", "ftvl", "cols", "sanl", "bayf"],
-    connections: { K: "12th", M: "woak", A: "hayw", L: "cast", O: "oakl" },
-  },
-  A: {
-    name: "Alameda Line",
-    stations: ["hayw", "shay", "ucty", "frmt", "warm", "mlpt", "bery"],
-    connections: { AL: "bayf" },
   },
   L: {
     name: "Livermore Line",
@@ -42,38 +32,48 @@ const segments = {
   M: {
     name: "Market/Mission Line",
     stations: ["woak", "embr", "mont", "powl", "civc", "16th", "24th", "glen", "balb", "daly"],
-    connections: { K: "12th", AL: "lake", SM: "colm" },
+    connections: { K: "12th", AL: "lake", W: "colm" },
   },
-  SM: {
+  R: {
+    name: "Richmond Line",
+    stations: ["rich", "deln", "plza", "nbrk", "dbrk", "ashb"],
+    connections: { K: "mcar" },
+  },
+  S: {
+    name: "South Alameda/Santa Clara Line",
+    stations: ["warm", "mlpt", "bery"],
+    connections: { A: "frmt" },
+  },
+  W: {
     name: "San Mateo Line",
-    stations: ["colm", "ssan", "sbrn"],
+    stations: ["colm", "ssan", "sbrn", "mlbr"],
     connections: { M: "daly" },
   },
-  SFO: {
+  Y: {
     name: "SFO Line",
     stations: ["sfia"],
-    connections: { SM: "sbrn", MLBR: "mlbr" },
+    connections: { W: "sbrn", W: "mlbr" },
   },
-  MLBR: {
-    name: "Millbrae Line",
-    stations: ["mlbr"],
-    connections: { SM: "sbrn", SFO: "sfia" },
+  E: {
+    name: "eBART Line",
+    stations: ["antc", "pctr"],
+    connections: { C: "pitt" },
   },
-  OAK: {
+  H: {
+    // not a mainline bart line, so it gets special handling
     name: "OAK Airtrain",
-    stations: ["oakl"],
-    connections: { AL: "cols" },
+    stations: ["oakl", "cols"],
   },
 };
 
 const lines = [{
   name: "Orange",
   color: "#f8a51a",
-  segments: ["R", "K", "AL", "A"],
+  segments: ["R", "K", "AL", "A", "S"],
 }, {
   name: "Yellow",
   color: "#ffe802",
-  segments: ["C", "eBART", "K", "M", "SM", "SFO"],
+  segments: ["C", "E", "K", "M", "W", "Y"],
 }, {
   name: "Blue",
   color: "#01aced",
@@ -81,15 +81,15 @@ const lines = [{
 }, {
   name: "Red",
   color: "#ec1c23",
-  segments: ["R", "K", "M", "SM", "MLBR"],
+  segments: ["R", "K", "M", "W"],
 }, {
   name: "Green",
   color: "#4db947",
-  segments: ["M", "AL", "A"],
+  segments: ["M", "AL", "A", "S"],
 }, {
   name: "Beige",
   color: "#a8a280",
-  segments: ["OAK"],
+  segments: ["H"],
 }];
 
 const landforms = [{
