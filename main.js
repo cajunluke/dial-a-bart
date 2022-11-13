@@ -668,9 +668,14 @@ function precomputeStations() {
       // and remove it from the nodes collection
       delete nodes[nextStation];
     }
-    
-    //TODO better
-    console.table(line.stations);
+  });
+  
+  lines.forEach(line => {
+    line.stations.forEach(station => {
+      const { visitingLines = 0 } = stations[station];
+      
+      stations[station].visitingLines = visitingLines + 1;
+    });
   });
 }
 
@@ -681,24 +686,81 @@ const convertPoint = ({ x, y }) => {
   };
 };
 
-const drawLine = (context, line, state) => {
-  context.beginPath();
-  context.strokeStyle = line.color;
-  context.lineWidth = 2;
+const drawLines = (context, lines, state) => {
+  // map<string, int> counting lines currently visited
+  const visitedLines = {};
   
-  const points = line.stations.map(station => stations[station])
-                              .map(station => station.location)
-                              .map(point => convertPoint(point));
-                     
-  const startPoint = points[0];
-  context.moveTo(startPoint.x, startPoint.y);
-  
-  points.forEach(({x, y}) => {
-    context.lineTo(x, y);
+  lines.forEach((line, index) => {
+    context.beginPath();
+    context.strokeStyle = line.color;
+    context.lineWidth = 3;
+    
+    const points = line.stations.map(station => {
+      const { location, visitingLines } = stations[station];
+      
+      const point = convertPoint(location);
+      
+      if(visitingLines === 1) {
+        // one line visiting means no offset needed
+        return point;
+      }
+      
+      // get and increment visitedLines for this station
+      const alreadyVisited = visitedLines[station] ?? 0;
+      visitedLines[station] = alreadyVisited + 1;
+      
+      // offset line by how many have already been here
+      // TODO fancy algorithm
+      
+      // also TODO slanted lines should be offset by pythagoras
+      
+      const increment = 3 * alreadyVisited;
+      
+      if(visitingLines === 2) {
+        // offset by half a linewidth
+        // hard-coded because it's shit anyway
+        
+        return {
+          x: (point.x - 1.5) + increment,
+          y: point.y,
+        };
+      }
+      
+      if(visitingLines === 3) {
+        // offset by whole linewidth
+        // hard-coded because it's shit anyway
+        
+        return {
+          x: (point.x - 3) + increment,
+          y: point.y,
+        };
+      }
+      
+      if(visitingLines === 4) {
+        // offset by half again linewidth
+        // hard-coded because it's shit anyway
+        
+        return {
+          x: (point.x - 4.5) + increment,
+          y: point.y,
+        };
+      }
+    });
+    
+    // const points = line.stations.map(station => stations[station])
+    //                             .map(station => station.location)
+    //                             .map(point => convertPoint(point));
+                       
+    const startPoint = points[0];
+    context.moveTo(startPoint.x, startPoint.y);
+    
+    points.forEach(({x, y}) => {
+      context.lineTo(x, y);
+    });
+    
+    context.stroke();
+    context.closePath();
   });
-  
-  context.stroke();
-  context.closePath();
 };
 
 const drawMap = (map, state) => {
@@ -728,9 +790,7 @@ const drawMap = (map, state) => {
   });
   
   // draw lines
-  lines.forEach(line => {
-    drawLine(context, line, state);
-  });
+  drawLines(context, lines, state);
   
   // draw station circles
   // if no selected segment, highlight nothing
@@ -743,15 +803,12 @@ const drawMap = (map, state) => {
     
     if(highlightStations.includes(code)) {
       context.fillStyle = "cornflowerblue";
-      context.strokeStyle = "black";
-      
-      context.lineWidth = 2;
     } else {
       context.fillStyle = "white";
-      context.strokeStyle = "black";
-      
-      context.lineWidth = 1;
     }
+    
+    context.strokeStyle = "black";
+    context.lineWidth = 1;
     
     context.ellipse(x, y, 5, 5, 0, 0, 2 * Math.PI);
     context.fill();
