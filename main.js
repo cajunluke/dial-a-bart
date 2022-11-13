@@ -916,11 +916,13 @@ const buildTable = (linesArea, state, repaint) => {
     row.append(color);
     
     Object.keys(segments).forEach(segment => {
-      const hasSegment = document.createElement("td");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.disabled = true;
+      checkbox.checked = line.segments.includes(segment);
       
-      if(line.segments.includes(segment)) {
-        hasSegment.append("Y");
-      }
+      const hasSegment = document.createElement("td");
+      hasSegment.append(checkbox);
       
       row.append(hasSegment);
     });
