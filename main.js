@@ -609,6 +609,29 @@ const convertPoint = ({ x, y }) => {
   };
 };
 
+const drawLine = (context, line, state) => {
+  context.beginPath();
+  context.strokeStyle = line.color;
+  context.lineWidth = 2;
+  
+  const points = line.segments
+                     .map(segment => segments[segment])
+                     .flatMap(segment => segment.stations)
+                     .map(station => stations[station])
+                     .map(station => station.location)
+                     .map(point => convertPoint(point));
+                     
+  const startPoint = points[0];
+  context.moveTo(startPoint.x, startPoint.y);
+  
+  points.forEach(({x, y}) => {
+    context.lineTo(x, y);
+  });
+  
+  context.stroke();
+  context.closePath();
+};
+
 const drawMap = (map, state) => {
   const context = map.getContext("2d");
   
@@ -634,6 +657,9 @@ const drawMap = (map, state) => {
     context.fill();
     context.closePath();
   });
+  
+  // draw lines
+  drawLine(context, lines[0], state);
   
   // draw station circles
   // if no selected segment, highlight nothing
