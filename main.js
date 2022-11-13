@@ -602,6 +602,78 @@ function dataCheck() {
   }
 }
 
+function precomputeStations() {
+  lines.forEach(line => {
+    const lineStations = line.segments
+                             .map(segment => segments[segment])
+                             .flatMap(segment => segment.stations);
+    
+    // need to find an endpoint and sort stations along line
+    
+    // pre-populate `nodes` with objects for each station
+    const nodes = {};
+    lineStations.forEach(station => {
+      nodes[station] = {
+        adjacent: [],
+      };
+    });
+    
+    // bart doesn't have cycles, so I didn't bother checking for that
+    // also *one* of the ends has to be a terminal station, so no trying to simulate short-turns like 24th-pctr
+    
+    // this will be the first endpoint we find
+    let endpoint = undefined;
+    lineStations.forEach(station => {
+      const { links = [] } = stations[station];
+      
+      if(links.length === 0) {
+        // not sure how we got here; go to next
+        return;
+      }
+      
+      if(links.length === 1 && endpoint === undefined) {
+        // this is a terminal station and we haven't found an endpoint yet; this is our end
+        endpoint = station;
+      }
+      
+      links.forEach(link => {
+        // if this link is in the station list
+        if(nodes[link.station]) {
+          nodes[station].adjacent.push(link.station);
+        }
+      });
+    });
+    
+    // our output data structure
+    line.stations = [];
+    
+    // the endpoint comes first
+    line.stations.push(endpoint);
+    
+    // declare it to be our initial node
+    let currentNode = nodes[endpoint];
+    // and remove it from the nodes collection
+    delete nodes[endpoint];
+    
+    // while nodes reamin, find the next node and travel there
+    while(Object.keys(nodes).length > 0) {
+      const availables = currentNode.adjacent.filter(link => Object.keys(nodes).includes(link));
+      const nextStation = availables[0];
+      
+      // put this as the next station in the list
+      line.stations.push(nextStation);
+      
+      // set it as next node
+      currentNode = nodes[nextStation];
+      // and remove it from the nodes collection
+      delete nodes[nextStation];
+    }
+    
+    //TODO better
+    console.table(line.stations);
+  });
+}
+
 const convertPoint = ({ x, y }) => {
   return {
     x: Math.round(x * canvasSize.width), 
@@ -614,12 +686,9 @@ const drawLine = (context, line, state) => {
   context.strokeStyle = line.color;
   context.lineWidth = 2;
   
-  const points = line.segments
-                     .map(segment => segments[segment])
-                     .flatMap(segment => segment.stations)
-                     .map(station => stations[station])
-                     .map(station => station.location)
-                     .map(point => convertPoint(point));
+  const points = line.stations.map(station => stations[station])
+                              .map(station => station.location)
+                              .map(point => convertPoint(point));
                      
   const startPoint = points[0];
   context.moveTo(startPoint.x, startPoint.y);
@@ -659,8 +728,9 @@ const drawMap = (map, state) => {
   });
   
   // draw lines
-  drawLine(context, lines[0], state);
-  drawLine(context, lines[1], state);
+  lines.forEach(line => {
+    drawLine(context, line, state);
+  });
   
   // draw station circles
   // if no selected segment, highlight nothing
@@ -824,5 +894,12 @@ function main() {
   repaint();
 }
 
+// verify data consistency
 dataCheck();
+
+// examine the lines and build reasonable station lists
+// NOTE: this won't work for DIY lines later, but it'll be fine now
+precomputeStations();
+
+// build the page and run!
 main();
