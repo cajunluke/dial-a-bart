@@ -176,7 +176,7 @@ const stations = {
       { station: "civc", time: 0, distance: 0 },
       { station: "24th", time: 0, distance: 0 },
     ],
-    location: { x: .218, y: .568 },
+    location: { x: .218, y: .566 },
   },
   ["19th"]: {
     name: "19th St. Oakland",
@@ -192,7 +192,7 @@ const stations = {
       { station: "16th", time: 0, distance: 0 },
       { station: "glen", time: 0, distance: 0 },
     ],
-    location: { x: .218, y: .594 },
+    location: { x: .218, y: .593 },
   },
   antc: {
     name: "Antioch",
@@ -215,7 +215,7 @@ const stations = {
       { station: "glen", time: 0, distance: 0 },
       { station: "daly", time: 0, distance: 0 },
     ],
-    location: { x: .218, y: .649 },
+    location: { x: .218, y: .651 },
   },
   bayf: {
     name: "Bay Fair",
@@ -256,7 +256,7 @@ const stations = {
       { station: "sanl", time: 0, distance: 0 },
       { station: "oakl", time: 0, distance: 0 },
     ],
-    location: { x: .473, y: .531 },
+    location: { x: .473, y: .533 },
   },
   colm: {
     name: "Colma",
@@ -343,7 +343,7 @@ const stations = {
       { station: "24th", time: 0, distance: 0 },
       { station: "balb", time: 0, distance: 0 },
     ],
-    location: { x: .218, y: .623 },
+    location: { x: .218, y: .622 },
   },
   hayw: {
     name: "Hayward",
@@ -359,7 +359,7 @@ const stations = {
       { station: "orin", time: 0, distance: 0 },
       { station: "wcrk", time: 0, distance: 0 },
     ],
-    location: { x: .476, y: .226 },
+    location: { x: .474, y: .224 },
   },
   lake: {
     name: "Lake Merritt",
@@ -456,7 +456,7 @@ const stations = {
       { station: "conc", time: 0, distance: 0 },
       { station: "wcrk", time: 0, distance: 0 },
     ],
-    location: { x: .520, y: .171 },
+    location: { x: .518, y: .171 },
   },
   powl: {
     name: "Powell St.",
@@ -512,7 +512,7 @@ const stations = {
       { station: "hayw", time: 0, distance: 0 },
       { station: "ucty", time: 0, distance: 0 },
     ],
-    location: { x: .596, y: .689 },
+    location: { x: .598, y: .689 },
   },
   ssan: {
     name: "South San Francisco",
@@ -536,7 +536,7 @@ const stations = {
       { station: "phil", time: 0, distance: 0 },
       { station: "lafy", time: 0, distance: 0 },
     ],
-    location: { x: .496, y: .199 },
+    location: { x: .497, y: .196 },
   },
   warm: {
     name: "Warm Springs",
