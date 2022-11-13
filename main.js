@@ -819,7 +819,7 @@ const drawMap = (map, state) => {
   context.closePath();
 };
 
-const buildTable = (linesArea, state, repaint) => {
+const buildTable = (linesArea, state, repaint, editingLineChanged) => {
   // build column groups
   const colgroup = linesArea.querySelectorAll("table colgroup")[0];
   
@@ -909,7 +909,19 @@ const buildTable = (linesArea, state, repaint) => {
     const row = document.createElement("tr");
     
     const sequence = document.createElement("td");
-    sequence.textContent = `${index+1}`;
+    sequence.textContent = `${index+1}  📈`;
+    
+    sequence.onclick = event => {
+      if(state.editingLine === index) {
+        // if we're already selected, unselect
+        state.editingLine = undefined;
+      } else {
+        state.editingLine = index;
+      }
+      
+      editingLineChanged();
+    };
+    
     row.append(sequence);
     
     const color = document.createElement("td");
@@ -955,10 +967,31 @@ const buildTable = (linesArea, state, repaint) => {
   });
 };
 
+const buildStringline = (timings, stringline, state) => {
+  const header = timings.querySelectorAll("h2")[0];
+  
+  if(state.editingLine === undefined) {
+    header.textContext = "Select a line to edit";
+    header.style = "background: unset;";
+    
+    stringline.style = "display: none;";
+    
+    return;
+  }
+  
+  const line = lines[state.editingLine];
+  
+  header.textContext = `Currently editing ${line.name} Line`;
+  header.style = `background: ${line.color};`;
+  
+  stringline.style = "";
+};
+
 function main() {
   const state = {
     selectedSegment: undefined,
     selectedLine: undefined,
+    editingLine: undefined,
   };
   
   const map = document.getElementById("bartmap");
@@ -969,8 +1002,16 @@ function main() {
     drawMap(map, state);
   };
   
+  const timings = document.getElementById("stringlineHeader");
+  const stringline = document.getElementById("stringline");
+  const editingLineChanged = () => {
+    buildStringline(timings, stringline, state);
+  };
+  
   const linesArea = document.getElementById("lines");
-  buildTable(linesArea, state, repaint);
+  buildTable(linesArea, state, repaint, editingLineChanged);
+  
+  editingLineChanged();
   
   // draw in canvas
   repaint();
