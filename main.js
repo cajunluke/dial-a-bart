@@ -67,22 +67,28 @@ const segments = {
 };
 
 const lines = [{
-  color: "Orange",
+  name: "Orange",
+  color: "#f8a51a",
   segments: ["R", "K", "AL", "A"],
 }, {
-  color: "Yellow",
+  name: "Yellow",
+  color: "#ffe802",
   segments: ["C", "eBART", "K", "M", "SM", "SFO"],
 }, {
-  color: "Blue",
+  name: "Blue",
+  color: "#01aced",
   segments: ["M", "AL", "L"],
 }, {
-  color: "Red",
+  name: "Red",
+  color: "#ec1c23",
   segments: ["R", "K", "M", "SM", "MLBR"],
 }, {
-  color: "Green",
+  name: "Green",
+  color: "#4db947",
   segments: ["M", "AL", "A"],
 }, {
-  color: "Beige",
+  name: "Beige",
+  color: "#a8a280",
   segments: ["OAK"],
 }];
 
@@ -753,7 +759,8 @@ const buildTable = (linesArea, state, repaint) => {
     row.append(sequence);
     
     const color = document.createElement("td");
-    color.append(line.color);
+    color.textContent = line.name;
+    color.style = `background: ${line.color}30;`;
     row.append(color);
     
     Object.keys(segments).forEach(segment => {
