@@ -13,7 +13,8 @@ body {
     "head head"     auto
     "lines map"     auto
     "timings map"   auto
-    "footer footer" auto / 1fr 1fr;
+    "footer footer" auto / 1fr auto;
+  gap: 1rem;
 }
 
 header {
@@ -39,7 +40,6 @@ footer {
 /**** LINES ****/
 
 #lines table {
-  /* max-width: 600px; */
   margin: 0;
   display: block;
   overflow-x: auto;
@@ -76,8 +76,7 @@ footer {
 /**** MAP ****/
 
 #map .frame {
-  margin: 1rem;
-  border: 2px outset #848484c9;
+  border: 2px outset #242424;
   background: #969696;
 }
 

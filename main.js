@@ -297,7 +297,7 @@ const stations = {
       { station: "rich", time: 0, distance: 0 },
       { station: "plza", time: 0, distance: 0 },
     ],
-    location: { x: .285, y: .174 },
+    location: { x: .288, y: .171 },
   },
   plza: {
     name: "El Cerrito Plaza",
@@ -305,7 +305,7 @@ const stations = {
       { station: "deln", time: 0, distance: 0 },
       { station: "nbrk", time: 0, distance: 0 },
     ],
-    location: { x: .308, y: .201 },
+    location: { x: .310, y: .199 },
   },
   embr: {
     name: "Embarcadero",
@@ -745,7 +745,7 @@ const buildTable = (linesArea, state, repaint) => {
   // lines in table body
   const tableBody = linesArea.querySelectorAll("table tbody")[0];
   
-  lines.forEach((line, index) => {    
+  lines.forEach((line, index) => {
     const row = document.createElement("tr");
     
     const sequence = document.createElement("td");
