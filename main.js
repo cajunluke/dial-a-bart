@@ -1,7 +1,7 @@
 const canvasSize = { width: 700, height: 557 };
 
 const waterColor = "#e4f1f7";
-const landColor = "#969696";
+const landColor = "#a6a6a6";
 
 const segments = {
   AL: {
