@@ -160,406 +160,410 @@ const landforms = [{
   ],
 }];
 
+/**
+ * time is in minutes; distance is in kilometers
+ */
 const stations = {
   ["12th"]: {
     name: "12th St. Oakland City Center",
     links: [
-      { station: "19th", time: 0, distance: 0 },
-      { station: "woak", time: 0, distance: 0 },
-      { station: "lake", time: 0, distance: 0 },
+      { station: "19th", time: 2, distance: .661 },
+      { station: "woak", time: 4, distance: 2.54 },
+      { station: "lake", time: 3, distance: 1.10 },
     ],
     location: { x: .401, y: .400 },
   },
   ["16th"]: {
     name: "16th St. Mission",
     links: [
-      { station: "civc", time: 0, distance: 0 },
-      { station: "24th", time: 0, distance: 0 },
+      { station: "civc", time: 2, distance: 1.78 },
+      { station: "24th", time: 2, distance: 1.46 },
     ],
     location: { x: .218, y: .566 },
   },
   ["19th"]: {
     name: "19th St. Oakland",
     links: [
-      { station: "12th", time: 0, distance: 0 },
-      { station: "mcar", time: 0, distance: 0 },
+      { station: "12th", time: 2, distance: .661 },
+      { station: "mcar", time: 4, distance: 2.41 },
     ],
     location: { x: .401, y: .369 },
   },
   ["24th"]: {
     name: "24th St. Mission",
     links: [
-      { station: "16th", time: 0, distance: 0 },
-      { station: "glen", time: 0, distance: 0 },
+      { station: "16th", time: 2, distance: 1.46 },
+      { station: "glen", time: 3, distance: 2.65 },
     ],
     location: { x: .218, y: .593 },
   },
   antc: {
     name: "Antioch",
     links: [
-      { station: "pctr", time: 0, distance: 0 },
+      { station: "pctr", time: 7, distance: 9.89 },
     ],
     location: { x: .764, y: .119 },
   },
   ashb: {
     name: "Ashby",
     links: [
-      { station: "mcar", time: 0, distance: 0 },
-      { station: "dbrk", time: 0, distance: 0 },
+      // orange line ashb -> mcar is 6 mins, probably for extra dwell time
+      { station: "mcar", time: 3, distance: 2.80 },
+      { station: "dbrk", time: 2, distance: 1.94 },
     ],
     location: { x: .371, y: .281 },
   },
   balb: {
     name: "Balboa Park",
     links: [
-      { station: "glen", time: 0, distance: 0 },
-      { station: "daly", time: 0, distance: 0 },
+      { station: "glen", time: 4, distance: 1.83 },
+      { station: "daly", time: 4, distance: 2.88 },
     ],
     location: { x: .218, y: .651 },
   },
   bayf: {
     name: "Bay Fair",
     links: [
-      { station: "cast", time: 0, distance: 0 },
-      { station: "sanl", time: 0, distance: 0 },
-      { station: "hayw", time: 0, distance: 0 },
+      { station: "cast", time: 4, distance: 4.81 },
+      { station: "sanl", time: 4, distance: 4.12 },
+      { station: "hayw", time: 4, distance: 4.60 },
     ],
     location: { x: .520, y: .591 },
   },
   bery: {
     name: "Berryessa / North San José",
     links: [
-      { station: "mlpt", time: 0, distance: 0 },
+      { station: "mlpt", time: 4, distance: 4.86 },
     ],
     location: { x: .689, y: .912 },
   },
   cast: {
     name: "Castro Valley",
     links: [
-      { station: "bayf", time: 0, distance: 0 },
-      { station: "wdub", time: 0, distance: 0 },
+      { station: "bayf", time: 4, distance: 4.81 },
+      { station: "wdub", time: 10, distance: 13.56 },
     ],
     location: { x: .620, y: .606 },
   },
   civc: {
     name: "Civic Center / UN Plaza",
     links: [
-      { station: "powl", time: 0, distance: 0 },
-      { station: "16th", time: 0, distance: 0 },
+      { station: "powl", time: 2, distance: .749 },
+      { station: "16th", time: 2, distance: 1.78 },
     ],
     location: { x: .235, y: .518 },
   },
   cols: {
     name: "Coliseum",
     links: [
-      { station: "ftvl", time: 0, distance: 0 },
-      { station: "sanl", time: 0, distance: 0 },
-      { station: "oakl", time: 0, distance: 0 },
+      { station: "ftvl", time: 4, distance: 3.38 },
+      { station: "sanl", time: 4, distance: 4.76 },
+      { station: "oakl", time: 9, distance: 4.99 },
     ],
     location: { x: .473, y: .533 },
   },
   colm: {
     name: "Colma",
     links: [
-      { station: "daly", time: 0, distance: 0 },
-      { station: "ssan", time: 0, distance: 0 },
+      { station: "daly", time: 4, distance: 2.58 },
+      { station: "ssan", time: 3, distance: 3.03 },
     ],
     location: { x: .257, y: .729 },
   },
   conc: {
     name: "Concord",
     links: [
-      { station: "ncon", time: 0, distance: 0 },
-      { station: "phil", time: 0, distance: 0 },
+      { station: "ncon", time: 3, distance: 3.61 },
+      { station: "phil", time: 5, distance: 6.52 },
     ],
     location: { x: .542, y: .145 },
   },
   daly: {
     name: "Daly City",
     links: [
-      { station: "balb", time: 0, distance: 0 },
-      { station: "colm", time: 0, distance: 0 },
+      { station: "balb", time: 4, distance: 2.88 },
+      { station: "colm", time: 4, distance: 2.58 },
     ],
     location: { x: .235, y: .701 },
   },
   dbrk: {
     name: "Downtown Berkeley",
     links: [
-      { station: "ashb", time: 0, distance: 0 },
-      { station: "nbrk", time: 0, distance: 0 },
+      { station: "ashb", time: 3, distance: 1.94 },
+      { station: "nbrk", time: 3, distance: 1.68 },
     ],
     location: { x: .351, y: .251 },
   },
   dubl: {
     name: "Dublin / Pleasanton",
     links: [
-      { station: "wdub", time: 0, distance: 0 },
+      { station: "wdub", time: 3, distance: 2.58 },
     ],
     location: { x: .769, y: .606 },
   },
   deln: {
     name: "El Cerrito del Norte",
     links: [
-      { station: "rich", time: 0, distance: 0 },
-      { station: "plza", time: 0, distance: 0 },
+      { station: "rich", time: 7, distance: 3.72 },
+      { station: "plza", time: 3, distance: 2.96 },
     ],
     location: { x: .288, y: .171 },
   },
   plza: {
     name: "El Cerrito Plaza",
     links: [
-      { station: "deln", time: 0, distance: 0 },
-      { station: "nbrk", time: 0, distance: 0 },
+      { station: "deln", time: 3, distance: 2.96 },
+      { station: "nbrk", time: 3, distance: 3.56 },
     ],
     location: { x: .310, y: .199 },
   },
   embr: {
     name: "Embarcadero",
     links: [
-      { station: "woak", time: 0, distance: 0 },
-      { station: "mont", time: 0, distance: 0 },
+      { station: "woak", time: 7, distance: 9.49 },
+      { station: "mont", time: 1, distance: .547 },
     ],
     location: { x: .280, y: .458 },
   },
   frmt: {
     name: "Fremont",
     links: [
-      { station: "ucty", time: 0, distance: 0 },
-      { station: "warm", time: 0, distance: 0 },
+      { station: "ucty", time: 5, distance: 5.16 },
+      { station: "warm", time: 6, distance: 7.49 },
     ],
     location: { x: .665, y: .771 },
   },
   ftvl: {
     name: "Fruitvale",
     links: [
-      { station: "lake", time: 0, distance: 0 },
-      { station: "cols", time: 0, distance: 0 },
+      { station: "lake", time: 4, distance: 4.40 },
+      { station: "cols", time: 4, distance: 3.38 },
     ],
     location: { x: .449, y: .503 },
   },
   glen: {
     name: "Glen Park",
     links: [
-      { station: "24th", time: 0, distance: 0 },
-      { station: "balb", time: 0, distance: 0 },
+      { station: "24th", time: 3, distance: 2.65 },
+      { station: "balb", time: 3, distance: 1.83 },
     ],
     location: { x: .218, y: .622 },
   },
   hayw: {
     name: "Hayward",
     links: [
-      { station: "bayf", time: 0, distance: 0 },
-      { station: "shay", time: 0, distance: 0 },
+      { station: "bayf", time: 4, distance: 4.60 },
+      { station: "shay", time: 4, distance: 4.74 },
     ],
     location: { x: .565, y: .647 },
   },
   lafy: {
     name: "Lafayette",
     links: [
-      { station: "orin", time: 0, distance: 0 },
-      { station: "wcrk", time: 0, distance: 0 },
+      { station: "orin", time: 4, distance: 6.05 },
+      { station: "wcrk", time: 5, distance: 5.56 },
     ],
     location: { x: .474, y: .224 },
   },
   lake: {
     name: "Lake Merritt",
     links: [
-      { station: "12th", time: 0, distance: 0 },
-      { station: "woak", time: 0, distance: 0 },
-      { station: "ftvl", time: 0, distance: 0 },
+      { station: "12th", time: 3, distance: 1.10 },
+      { station: "woak", time: 5, distance: 2.94 },
+      { station: "ftvl", time: 4, distance: 4.40 },
     ],
     location: { x: .425, y: .472 },
   },
   mcar: {
     name: "MacArthur",
     links: [
-      { station: "ashb", time: 0, distance: 0 },
-      { station: "rock", time: 0, distance: 0 },
-      { station: "19th", time: 0, distance: 0 },
+      { station: "ashb", time: 4, distance: 2.80 },
+      { station: "rock", time: 4, distance: 2.53 },
+      { station: "19th", time: 3, distance: 2.41 },
     ],
     location: { x: .401, y: .338 },
   },
   mlbr: {
     name: "Millbrae",
     links: [
-      { station: "sbrn", time: 0, distance: 0 },
-      { station: "sfia", time: 0, distance: 0 },
+      { station: "sbrn", time: 4, distance: 4.93 },
+      { station: "sfia", time: 5, distance: 2.70 },
     ],
     location: { x: .327, y: .822 },
   },
   mlpt: {
     name: "Milpitas",
     links: [
-      { station: "warm", time: 0, distance: 0 },
-      { station: "bery", time: 0, distance: 0 },
+      { station: "warm", time: 8, distance: 11.10 },
+      { station: "bery", time: 4, distance: 4.86 },
     ],
     location: { x: .689, y: .870 },
   },
   mont: {
     name: "Montgomery St.",
     links: [
-      { station: "embr", time: 0, distance: 0 },
-      { station: "powl", time: 0, distance: 0 },
+      { station: "embr", time: 2, distance: .547 },
+      { station: "powl", time: 2, distance: .804 },
     ],
     location: { x: .266, y: .478 },
   },
   nbrk: {
     name: "North Berkeley",
     links: [
-      { station: "dbrk", time: 0, distance: 0 },
-      { station: "plza", time: 0, distance: 0 },
+      { station: "dbrk", time: 2, distance: 1.68 },
+      { station: "plza", time: 3, distance: 3.56 },
     ],
     location: { x: .332, y: .225 },
   },
   ncon: {
     name: "North Concord / Martinez",
     links: [
-      { station: "pitt", time: 0, distance: 0 },
-      { station: "conc", time: 0, distance: 0 },
+      { station: "pitt", time: 7, distance: 7.81 },
+      { station: "conc", time: 3, distance: 3.61 },
     ],
     location: { x: .585, y: .119 },
   },
   oakl: {
     name: "Oakland International Airport",
     links: [
-      { station: "cols", time: 0, distance: 0 },
+      { station: "cols", time: 9, distance: 4.99 },
     ],
     location: { x: .457, y: .605 },
   },
   orin: {
     name: "Orinda",
     links: [
-      { station: "rock", time: 0, distance: 0 },
-      { station: "lafy", time: 0, distance: 0 },
+      { station: "rock", time: 6, distance: 7.07 },
+      { station: "lafy", time: 4, distance: 6.05 },
     ],
     location: { x: .455, y: .249 },
   },
   pitt: {
     name: "Pittsburg / Bay Point",
     links: [
-      { station: "pctr", time: 0, distance: 0 },
-      { station: "ncon", time: 0, distance: 0 },
+      { station: "pctr", time: 11, distance: 4.91 },
+      { station: "ncon", time: 6, distance: 7.81 },
     ],
     location: { x: .648, y: .119 },
   },
   pctr: {
     name: "Pittsburg Center",
     links: [
-      { station: "pitt", time: 0, distance: 0 },
-      { station: "antc", time: 0, distance: 0 },
+      { station: "pitt", time: 11, distance: 4.91 },
+      { station: "antc", time: 7, distance: 9.89 },
     ],
     location: { x: .713, y: .119 },
   },
   phil: {
     name: "Pleasant Hill / Contra Costa Centre",
     links: [
-      { station: "conc", time: 0, distance: 0 },
-      { station: "wcrk", time: 0, distance: 0 },
+      { station: "conc", time: 5, distance: 6.52 },
+      { station: "wcrk", time: 3, distance: 2.77 },
     ],
     location: { x: .518, y: .171 },
   },
   powl: {
     name: "Powell St.",
     links: [
-      { station: "mont", time: 0, distance: 0 },
-      { station: "civc", time: 0, distance: 0 },
+      { station: "mont", time: 2, distance: .804 },
+      { station: "civc", time: 1, distance: .749 },
     ],
     location: { x: .250, y: .496 },
   },
   rich: {
     name: "Richmond",
     links: [
-      { station: "deln", time: 0, distance: 0 },
+      { station: "deln", time: 4, distance: 3.72 },
     ],
     location: { x: .269, y: .142 },
   },
   rock: {
     name: "Rockridge",
     links: [
-      { station: "orin", time: 0, distance: 0 },
-      { station: "mcar", time: 0, distance: 0 },
+      { station: "orin", time: 6, distance: 7.07 },
+      { station: "mcar", time: 2, distance: 2.53 },
     ],
     location: { x: .432, y: .279 },
   },
   sbrn: {
     name: "San Bruno",
     links: [
-      { station: "ssan", time: 0, distance: 0 },
-      { station: "sfia", time: 0, distance: 0 },
-      { station: "mlbr", time: 0, distance: 0 },
+      { station: "ssan", time: 3, distance: 3.92 },
+      { station: "sfia", time: 3, distance: 3.55 },
+      { station: "mlbr", time: 5, distance: 4.93 },
     ],
     location: { x: .297, y: .789 },
   },
   sfia: {
     name: "San Francisco International Airport",
     links: [
-      { station: "mlbr", time: 0, distance: 0 },
-      { station: "sbrn", time: 0, distance: 0 },
+      { station: "mlbr", time: 4, distance: 2.70 },
+      { station: "sbrn", time: 4, distance: 3.55 },
     ],
     location: { x: .362, y: .798 },
   },
   sanl: {
     name: "San Leandro",
     links: [
-      { station: "bayf", time: 0, distance: 0 },
-      { station: "cols", time: 0, distance: 0 },
+      { station: "bayf", time: 4, distance: 4.12 },
+      { station: "cols", time: 4, distance: 4.76 },
     ],
     location: { x: .496, y: .561 },
   },
   shay: {
     name: "South Hayward",
     links: [
-      { station: "hayw", time: 0, distance: 0 },
-      { station: "ucty", time: 0, distance: 0 },
+      { station: "hayw", time: 4, distance: 4.74 },
+      { station: "ucty", time: 5, distance: 6.04 },
     ],
     location: { x: .598, y: .689 },
   },
   ssan: {
     name: "South San Francisco",
     links: [
-      { station: "sbrn", time: 0, distance: 0 },
-      { station: "colm", time: 0, distance: 0 },
+      { station: "sbrn", time: 3, distance: 3.92 },
+      { station: "colm", time: 3, distance: 3.03 },
     ],
     location: { x: .279, y: .755 },
   },
   ucty: {
     name: "Union City",
     links: [
-      { station: "shay", time: 0, distance: 0 },
-      { station: "frmt", time: 0, distance: 0 },
+      { station: "shay", time: 5, distance: 6.04 },
+      { station: "frmt", time: 5, distance: 5.16 },
     ],
     location: { x: .631, y: .729 },
   },
   wcrk: {
     name: "Walnut Creek",
     links: [
-      { station: "phil", time: 0, distance: 0 },
-      { station: "lafy", time: 0, distance: 0 },
+      { station: "phil", time: 3, distance: 2.77 },
+      { station: "lafy", time: 5, distance: 5.56 },
     ],
     location: { x: .497, y: .196 },
   },
   warm: {
     name: "Warm Springs",
     links: [
-      { station: "mlpt", time: 0, distance: 0 },
-      { station: "frmt", time: 0, distance: 0 },
+      { station: "mlpt", time: 8, distance: 11.10 },
+      { station: "frmt", time: 6, distance: 7.49 },
     ],
     location: { x: .689, y: .831 },
   },
   wdub: {
     name: "West Dublin / Pleasanton",
     links: [
-      { station: "dubl", time: 0, distance: 0 },
-      { station: "cast", time: 0, distance: 0 },
+      { station: "dubl", time: 3, distance: 2.58 },
+      { station: "cast", time: 10, distance: 13.56 },
     ],
     location: { x: .708, y: .606 },
   },
   woak: {
     name: "West Oakland",
     links: [
-      { station: "12th", time: 0, distance: 0 },
-      { station: "lake", time: 0, distance: 0 },
-      { station: "embr", time: 0, distance: 0 },
+      { station: "12th", time: 4, distance: 2.54 },
+      { station: "lake", time: 6, distance: 2.94 },
+      { station: "embr", time: 7, distance: 9.49 },
     ],
     location: { x: .370, y: .439 },
   },
@@ -582,10 +586,19 @@ function dataCheck() {
           if(inlink.station === code) {
             foundLink |= true;
             
-            // can only check time and distance matching if we have both ends
-            if(inlink.time !== link.time) {
-              console.log(`${name} and ${other.name} disagree on time: ${inlink.time} v ${link.time}`);
+            if(link.time === 0) {
+              console.log(`${name} has zero time to ${other.name} (${link.time})`);
             }
+            
+            if(link.distance === 0) {
+              console.log(`${name} has zero distance to ${other.name} (${link.distance})`);
+            }
+            
+            // can only check time and distance matching if we have both ends
+            // times can vary depending on direction because of dwell times
+            //if(inlink.time !== link.time) {
+            //  console.log(`${name} and ${other.name} disagree on time: ${inlink.time} v ${link.time}`);
+            //}
             
             if(inlink.distance !== link.distance) {
               console.log(`${name} and ${other.name} disagree on distance: ${inlink.distance} v ${link.distance}`);
