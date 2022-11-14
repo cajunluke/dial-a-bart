@@ -809,12 +809,17 @@ const drawMap = (map, state) => {
     context.ellipse(x, y, 5, 5, 0, 0, 2 * Math.PI);
     context.fill();
     context.stroke();
+    context.closePath();
     
+    context.beginPath();
+    
+    context.fillStyle = "black";
     context.lineWidth = 1;
     context.font = "11px sans-serif";
-    context.strokeText(code, x + 10, y + 4)
+    context.fillText(code, x + 10, y + 4);
+    
+    context.closePath();
   });
-  context.closePath();
 };
 
 const buildTable = (linesArea, state, repaint) => {
