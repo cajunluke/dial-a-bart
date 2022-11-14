@@ -84,12 +84,9 @@ footer {
 
 /**** TIMINGS ****/
 
-/*
-#timings .frame {
-  border: 2px outset #242424;
-  background: #ffffff;
+#stringlineHeader p {
+  padding: 0.7rem 1rem 0.5rem;
 }
-*/
 
 /**** FOOTER ****/
 

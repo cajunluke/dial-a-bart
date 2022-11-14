@@ -1,5 +1,5 @@
 const mapCanvasSize = { width: 700, height: 557 };
-const stringlineCanvasSize = { width: 1000, height: 750 };
+const stringlineCanvasSize = { width: 1250, height: 650 };
 
 const waterColor = "#e4f1f7";
 const landColor = "#ffffff";
@@ -1045,14 +1045,14 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
 };
 
 const buildStringline = (timings, stringline, state) => {
-  const header = timings.querySelectorAll("h2")[0];
+  const header = timings.querySelectorAll("p")[0];
   
   const context = stringline.getContext("2d");
   
   context.clearRect(0, 0, stringlineCanvasSize.width, stringlineCanvasSize.height);
   
   if(state.editingLine === undefined) {
-    header.textContext = "Select a line to edit";
+    header.innerText = "Select a line to edit";
     header.style = "background: unset;";
     
     stringline.style = "display: none;";
@@ -1062,7 +1062,7 @@ const buildStringline = (timings, stringline, state) => {
   
   const line = lines[state.editingLine];
   
-  header.textContext = `Currently editing ${line.name} Line`;
+  header.innerText = `Currently editing ${line.name} Line`;
   header.style = `background: ${line.color}40;`;
   
   const minorGridColor = "#00000066";
