@@ -929,6 +929,7 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
     
     const sequence = document.createElement("td");
     sequence.textContent = `${index+1}  📈`;
+    sequence.style = "cursor: pointer;";
     
     sequence.onclick = event => {
       if(state.editingLine === index) {
