@@ -1,4 +1,5 @@
-const canvasSize = { width: 700, height: 557 };
+const mapCanvasSize = { width: 700, height: 557 };
+const stringlineCanvasSize = { width: 1000, height: 750 };
 
 const waterColor = "#e4f1f7";
 const landColor = "#ffffff";
@@ -160,406 +161,410 @@ const landforms = [{
   ],
 }];
 
+/**
+ * time is in minutes; distance is in kilometers
+ */
 const stations = {
   ["12th"]: {
     name: "12th St. Oakland City Center",
     links: [
-      { station: "19th", time: 0, distance: 0 },
-      { station: "woak", time: 0, distance: 0 },
-      { station: "lake", time: 0, distance: 0 },
+      { station: "19th", time: 2, distance: .661 },
+      { station: "woak", time: 4, distance: 2.54 },
+      { station: "lake", time: 3, distance: 1.10 },
     ],
     location: { x: .401, y: .400 },
   },
   ["16th"]: {
     name: "16th St. Mission",
     links: [
-      { station: "civc", time: 0, distance: 0 },
-      { station: "24th", time: 0, distance: 0 },
+      { station: "civc", time: 2, distance: 1.78 },
+      { station: "24th", time: 2, distance: 1.46 },
     ],
     location: { x: .218, y: .566 },
   },
   ["19th"]: {
     name: "19th St. Oakland",
     links: [
-      { station: "12th", time: 0, distance: 0 },
-      { station: "mcar", time: 0, distance: 0 },
+      { station: "12th", time: 2, distance: .661 },
+      { station: "mcar", time: 4, distance: 2.41 },
     ],
     location: { x: .401, y: .369 },
   },
   ["24th"]: {
     name: "24th St. Mission",
     links: [
-      { station: "16th", time: 0, distance: 0 },
-      { station: "glen", time: 0, distance: 0 },
+      { station: "16th", time: 2, distance: 1.46 },
+      { station: "glen", time: 3, distance: 2.65 },
     ],
     location: { x: .218, y: .593 },
   },
   antc: {
     name: "Antioch",
     links: [
-      { station: "pctr", time: 0, distance: 0 },
+      { station: "pctr", time: 7, distance: 9.89 },
     ],
     location: { x: .764, y: .119 },
   },
   ashb: {
     name: "Ashby",
     links: [
-      { station: "mcar", time: 0, distance: 0 },
-      { station: "dbrk", time: 0, distance: 0 },
+      // orange line ashb -> mcar is 6 mins, probably for extra dwell time
+      { station: "mcar", time: 3, distance: 2.80 },
+      { station: "dbrk", time: 2, distance: 1.94 },
     ],
     location: { x: .371, y: .281 },
   },
   balb: {
     name: "Balboa Park",
     links: [
-      { station: "glen", time: 0, distance: 0 },
-      { station: "daly", time: 0, distance: 0 },
+      { station: "glen", time: 4, distance: 1.83 },
+      { station: "daly", time: 4, distance: 2.88 },
     ],
     location: { x: .218, y: .651 },
   },
   bayf: {
     name: "Bay Fair",
     links: [
-      { station: "cast", time: 0, distance: 0 },
-      { station: "sanl", time: 0, distance: 0 },
-      { station: "hayw", time: 0, distance: 0 },
+      { station: "cast", time: 4, distance: 4.81 },
+      { station: "sanl", time: 4, distance: 4.12 },
+      { station: "hayw", time: 4, distance: 4.60 },
     ],
     location: { x: .520, y: .591 },
   },
   bery: {
     name: "Berryessa / North San José",
     links: [
-      { station: "mlpt", time: 0, distance: 0 },
+      { station: "mlpt", time: 4, distance: 4.86 },
     ],
     location: { x: .689, y: .912 },
   },
   cast: {
     name: "Castro Valley",
     links: [
-      { station: "bayf", time: 0, distance: 0 },
-      { station: "wdub", time: 0, distance: 0 },
+      { station: "bayf", time: 4, distance: 4.81 },
+      { station: "wdub", time: 10, distance: 13.56 },
     ],
     location: { x: .620, y: .606 },
   },
   civc: {
     name: "Civic Center / UN Plaza",
     links: [
-      { station: "powl", time: 0, distance: 0 },
-      { station: "16th", time: 0, distance: 0 },
+      { station: "powl", time: 2, distance: .749 },
+      { station: "16th", time: 2, distance: 1.78 },
     ],
     location: { x: .235, y: .518 },
   },
   cols: {
     name: "Coliseum",
     links: [
-      { station: "ftvl", time: 0, distance: 0 },
-      { station: "sanl", time: 0, distance: 0 },
-      { station: "oakl", time: 0, distance: 0 },
+      { station: "ftvl", time: 4, distance: 3.38 },
+      { station: "sanl", time: 4, distance: 4.76 },
+      { station: "oakl", time: 9, distance: 4.99 },
     ],
     location: { x: .473, y: .533 },
   },
   colm: {
     name: "Colma",
     links: [
-      { station: "daly", time: 0, distance: 0 },
-      { station: "ssan", time: 0, distance: 0 },
+      { station: "daly", time: 4, distance: 2.58 },
+      { station: "ssan", time: 3, distance: 3.03 },
     ],
     location: { x: .257, y: .729 },
   },
   conc: {
     name: "Concord",
     links: [
-      { station: "ncon", time: 0, distance: 0 },
-      { station: "phil", time: 0, distance: 0 },
+      { station: "ncon", time: 3, distance: 3.61 },
+      { station: "phil", time: 5, distance: 6.52 },
     ],
     location: { x: .542, y: .145 },
   },
   daly: {
     name: "Daly City",
     links: [
-      { station: "balb", time: 0, distance: 0 },
-      { station: "colm", time: 0, distance: 0 },
+      { station: "balb", time: 4, distance: 2.88 },
+      { station: "colm", time: 4, distance: 2.58 },
     ],
     location: { x: .235, y: .701 },
   },
   dbrk: {
     name: "Downtown Berkeley",
     links: [
-      { station: "ashb", time: 0, distance: 0 },
-      { station: "nbrk", time: 0, distance: 0 },
+      { station: "ashb", time: 3, distance: 1.94 },
+      { station: "nbrk", time: 3, distance: 1.68 },
     ],
     location: { x: .351, y: .251 },
   },
   dubl: {
     name: "Dublin / Pleasanton",
     links: [
-      { station: "wdub", time: 0, distance: 0 },
+      { station: "wdub", time: 3, distance: 2.58 },
     ],
     location: { x: .769, y: .606 },
   },
   deln: {
     name: "El Cerrito del Norte",
     links: [
-      { station: "rich", time: 0, distance: 0 },
-      { station: "plza", time: 0, distance: 0 },
+      { station: "rich", time: 7, distance: 3.72 },
+      { station: "plza", time: 3, distance: 2.96 },
     ],
     location: { x: .288, y: .171 },
   },
   plza: {
     name: "El Cerrito Plaza",
     links: [
-      { station: "deln", time: 0, distance: 0 },
-      { station: "nbrk", time: 0, distance: 0 },
+      { station: "deln", time: 3, distance: 2.96 },
+      { station: "nbrk", time: 3, distance: 3.56 },
     ],
     location: { x: .310, y: .199 },
   },
   embr: {
     name: "Embarcadero",
     links: [
-      { station: "woak", time: 0, distance: 0 },
-      { station: "mont", time: 0, distance: 0 },
+      { station: "woak", time: 7, distance: 9.49 },
+      { station: "mont", time: 1, distance: .547 },
     ],
     location: { x: .280, y: .458 },
   },
   frmt: {
     name: "Fremont",
     links: [
-      { station: "ucty", time: 0, distance: 0 },
-      { station: "warm", time: 0, distance: 0 },
+      { station: "ucty", time: 5, distance: 5.16 },
+      { station: "warm", time: 6, distance: 7.49 },
     ],
     location: { x: .665, y: .771 },
   },
   ftvl: {
     name: "Fruitvale",
     links: [
-      { station: "lake", time: 0, distance: 0 },
-      { station: "cols", time: 0, distance: 0 },
+      { station: "lake", time: 4, distance: 4.40 },
+      { station: "cols", time: 4, distance: 3.38 },
     ],
     location: { x: .449, y: .503 },
   },
   glen: {
     name: "Glen Park",
     links: [
-      { station: "24th", time: 0, distance: 0 },
-      { station: "balb", time: 0, distance: 0 },
+      { station: "24th", time: 3, distance: 2.65 },
+      { station: "balb", time: 3, distance: 1.83 },
     ],
     location: { x: .218, y: .622 },
   },
   hayw: {
     name: "Hayward",
     links: [
-      { station: "bayf", time: 0, distance: 0 },
-      { station: "shay", time: 0, distance: 0 },
+      { station: "bayf", time: 4, distance: 4.60 },
+      { station: "shay", time: 4, distance: 4.74 },
     ],
     location: { x: .565, y: .647 },
   },
   lafy: {
     name: "Lafayette",
     links: [
-      { station: "orin", time: 0, distance: 0 },
-      { station: "wcrk", time: 0, distance: 0 },
+      { station: "orin", time: 4, distance: 6.05 },
+      { station: "wcrk", time: 5, distance: 5.56 },
     ],
     location: { x: .474, y: .224 },
   },
   lake: {
     name: "Lake Merritt",
     links: [
-      { station: "12th", time: 0, distance: 0 },
-      { station: "woak", time: 0, distance: 0 },
-      { station: "ftvl", time: 0, distance: 0 },
+      { station: "12th", time: 3, distance: 1.10 },
+      { station: "woak", time: 5, distance: 2.94 },
+      { station: "ftvl", time: 4, distance: 4.40 },
     ],
     location: { x: .425, y: .472 },
   },
   mcar: {
     name: "MacArthur",
     links: [
-      { station: "ashb", time: 0, distance: 0 },
-      { station: "rock", time: 0, distance: 0 },
-      { station: "19th", time: 0, distance: 0 },
+      { station: "ashb", time: 4, distance: 2.80 },
+      { station: "rock", time: 4, distance: 2.53 },
+      { station: "19th", time: 3, distance: 2.41 },
     ],
     location: { x: .401, y: .338 },
   },
   mlbr: {
     name: "Millbrae",
     links: [
-      { station: "sbrn", time: 0, distance: 0 },
-      { station: "sfia", time: 0, distance: 0 },
+      { station: "sbrn", time: 4, distance: 4.93 },
+      { station: "sfia", time: 5, distance: 2.70 },
     ],
     location: { x: .327, y: .822 },
   },
   mlpt: {
     name: "Milpitas",
     links: [
-      { station: "warm", time: 0, distance: 0 },
-      { station: "bery", time: 0, distance: 0 },
+      { station: "warm", time: 8, distance: 11.10 },
+      { station: "bery", time: 4, distance: 4.86 },
     ],
     location: { x: .689, y: .870 },
   },
   mont: {
     name: "Montgomery St.",
     links: [
-      { station: "embr", time: 0, distance: 0 },
-      { station: "powl", time: 0, distance: 0 },
+      { station: "embr", time: 2, distance: .547 },
+      { station: "powl", time: 2, distance: .804 },
     ],
     location: { x: .266, y: .478 },
   },
   nbrk: {
     name: "North Berkeley",
     links: [
-      { station: "dbrk", time: 0, distance: 0 },
-      { station: "plza", time: 0, distance: 0 },
+      { station: "dbrk", time: 2, distance: 1.68 },
+      { station: "plza", time: 3, distance: 3.56 },
     ],
     location: { x: .332, y: .225 },
   },
   ncon: {
     name: "North Concord / Martinez",
     links: [
-      { station: "pitt", time: 0, distance: 0 },
-      { station: "conc", time: 0, distance: 0 },
+      { station: "pitt", time: 7, distance: 7.81 },
+      { station: "conc", time: 3, distance: 3.61 },
     ],
     location: { x: .585, y: .119 },
   },
   oakl: {
     name: "Oakland International Airport",
     links: [
-      { station: "cols", time: 0, distance: 0 },
+      { station: "cols", time: 9, distance: 4.99 },
     ],
     location: { x: .457, y: .605 },
   },
   orin: {
     name: "Orinda",
     links: [
-      { station: "rock", time: 0, distance: 0 },
-      { station: "lafy", time: 0, distance: 0 },
+      { station: "rock", time: 6, distance: 7.07 },
+      { station: "lafy", time: 4, distance: 6.05 },
     ],
     location: { x: .455, y: .249 },
   },
   pitt: {
     name: "Pittsburg / Bay Point",
     links: [
-      { station: "pctr", time: 0, distance: 0 },
-      { station: "ncon", time: 0, distance: 0 },
+      { station: "pctr", time: 11, distance: 4.91 },
+      { station: "ncon", time: 6, distance: 7.81 },
     ],
     location: { x: .648, y: .119 },
   },
   pctr: {
     name: "Pittsburg Center",
     links: [
-      { station: "pitt", time: 0, distance: 0 },
-      { station: "antc", time: 0, distance: 0 },
+      { station: "pitt", time: 11, distance: 4.91 },
+      { station: "antc", time: 7, distance: 9.89 },
     ],
     location: { x: .713, y: .119 },
   },
   phil: {
     name: "Pleasant Hill / Contra Costa Centre",
     links: [
-      { station: "conc", time: 0, distance: 0 },
-      { station: "wcrk", time: 0, distance: 0 },
+      { station: "conc", time: 5, distance: 6.52 },
+      { station: "wcrk", time: 3, distance: 2.77 },
     ],
     location: { x: .518, y: .171 },
   },
   powl: {
     name: "Powell St.",
     links: [
-      { station: "mont", time: 0, distance: 0 },
-      { station: "civc", time: 0, distance: 0 },
+      { station: "mont", time: 2, distance: .804 },
+      { station: "civc", time: 1, distance: .749 },
     ],
     location: { x: .250, y: .496 },
   },
   rich: {
     name: "Richmond",
     links: [
-      { station: "deln", time: 0, distance: 0 },
+      { station: "deln", time: 4, distance: 3.72 },
     ],
     location: { x: .269, y: .142 },
   },
   rock: {
     name: "Rockridge",
     links: [
-      { station: "orin", time: 0, distance: 0 },
-      { station: "mcar", time: 0, distance: 0 },
+      { station: "orin", time: 6, distance: 7.07 },
+      { station: "mcar", time: 2, distance: 2.53 },
     ],
     location: { x: .432, y: .279 },
   },
   sbrn: {
     name: "San Bruno",
     links: [
-      { station: "ssan", time: 0, distance: 0 },
-      { station: "sfia", time: 0, distance: 0 },
-      { station: "mlbr", time: 0, distance: 0 },
+      { station: "ssan", time: 3, distance: 3.92 },
+      { station: "sfia", time: 3, distance: 3.55 },
+      { station: "mlbr", time: 5, distance: 4.93 },
     ],
     location: { x: .297, y: .789 },
   },
   sfia: {
     name: "San Francisco International Airport",
     links: [
-      { station: "mlbr", time: 0, distance: 0 },
-      { station: "sbrn", time: 0, distance: 0 },
+      { station: "mlbr", time: 4, distance: 2.70 },
+      { station: "sbrn", time: 4, distance: 3.55 },
     ],
     location: { x: .362, y: .798 },
   },
   sanl: {
     name: "San Leandro",
     links: [
-      { station: "bayf", time: 0, distance: 0 },
-      { station: "cols", time: 0, distance: 0 },
+      { station: "bayf", time: 4, distance: 4.12 },
+      { station: "cols", time: 4, distance: 4.76 },
     ],
     location: { x: .496, y: .561 },
   },
   shay: {
     name: "South Hayward",
     links: [
-      { station: "hayw", time: 0, distance: 0 },
-      { station: "ucty", time: 0, distance: 0 },
+      { station: "hayw", time: 4, distance: 4.74 },
+      { station: "ucty", time: 5, distance: 6.04 },
     ],
     location: { x: .598, y: .689 },
   },
   ssan: {
     name: "South San Francisco",
     links: [
-      { station: "sbrn", time: 0, distance: 0 },
-      { station: "colm", time: 0, distance: 0 },
+      { station: "sbrn", time: 3, distance: 3.92 },
+      { station: "colm", time: 3, distance: 3.03 },
     ],
     location: { x: .279, y: .755 },
   },
   ucty: {
     name: "Union City",
     links: [
-      { station: "shay", time: 0, distance: 0 },
-      { station: "frmt", time: 0, distance: 0 },
+      { station: "shay", time: 5, distance: 6.04 },
+      { station: "frmt", time: 5, distance: 5.16 },
     ],
     location: { x: .631, y: .729 },
   },
   wcrk: {
     name: "Walnut Creek",
     links: [
-      { station: "phil", time: 0, distance: 0 },
-      { station: "lafy", time: 0, distance: 0 },
+      { station: "phil", time: 3, distance: 2.77 },
+      { station: "lafy", time: 5, distance: 5.56 },
     ],
     location: { x: .497, y: .196 },
   },
   warm: {
     name: "Warm Springs",
     links: [
-      { station: "mlpt", time: 0, distance: 0 },
-      { station: "frmt", time: 0, distance: 0 },
+      { station: "mlpt", time: 8, distance: 11.10 },
+      { station: "frmt", time: 6, distance: 7.49 },
     ],
     location: { x: .689, y: .831 },
   },
   wdub: {
     name: "West Dublin / Pleasanton",
     links: [
-      { station: "dubl", time: 0, distance: 0 },
-      { station: "cast", time: 0, distance: 0 },
+      { station: "dubl", time: 3, distance: 2.58 },
+      { station: "cast", time: 10, distance: 13.56 },
     ],
     location: { x: .708, y: .606 },
   },
   woak: {
     name: "West Oakland",
     links: [
-      { station: "12th", time: 0, distance: 0 },
-      { station: "lake", time: 0, distance: 0 },
-      { station: "embr", time: 0, distance: 0 },
+      { station: "12th", time: 4, distance: 2.54 },
+      { station: "lake", time: 6, distance: 2.94 },
+      { station: "embr", time: 7, distance: 9.49 },
     ],
     location: { x: .370, y: .439 },
   },
@@ -582,10 +587,19 @@ function dataCheck() {
           if(inlink.station === code) {
             foundLink |= true;
             
-            // can only check time and distance matching if we have both ends
-            if(inlink.time !== link.time) {
-              console.log(`${name} and ${other.name} disagree on time: ${inlink.time} v ${link.time}`);
+            if(link.time === 0) {
+              console.log(`${name} has zero time to ${other.name} (${link.time})`);
             }
+            
+            if(link.distance === 0) {
+              console.log(`${name} has zero distance to ${other.name} (${link.distance})`);
+            }
+            
+            // can only check time and distance matching if we have both ends
+            // times can vary depending on direction because of dwell times
+            //if(inlink.time !== link.time) {
+            //  console.log(`${name} and ${other.name} disagree on time: ${inlink.time} v ${link.time}`);
+            //}
             
             if(inlink.distance !== link.distance) {
               console.log(`${name} and ${other.name} disagree on distance: ${inlink.distance} v ${link.distance}`);
@@ -681,8 +695,8 @@ function precomputeStations() {
 
 const convertPoint = ({ x, y }) => {
   return {
-    x: Math.round(x * canvasSize.width), 
-    y: Math.round(y * canvasSize.height),
+    x: Math.round(x * mapCanvasSize.width), 
+    y: Math.round(y * mapCanvasSize.height),
   };
 };
 
@@ -691,9 +705,11 @@ const drawLines = (context, lines, state) => {
   const visitedLines = {};
   
   lines.forEach((line, index) => {
+    const isSelected = state.selectedLine === index;
+    
     context.beginPath();
     context.strokeStyle = line.color;
-    context.lineWidth = 3;
+    context.lineWidth = isSelected ? 5 : 3;
     
     const points = line.stations.map(station => {
       const { location, visitingLines } = stations[station];
@@ -763,7 +779,7 @@ const drawMap = (map, state) => {
   const context = map.getContext("2d");
   
   // clear all previous drawing
-  context.clearRect(0, 0, canvasSize.width, canvasSize.height);
+  context.clearRect(0, 0, mapCanvasSize.width, mapCanvasSize.height);
   
   // draw background
   landforms.forEach(({ color, path }) => {
@@ -822,7 +838,7 @@ const drawMap = (map, state) => {
   });
 };
 
-const buildTable = (linesArea, state, repaint) => {
+const buildTable = (linesArea, state, repaint, editingLineChanged) => {
   // build column groups
   const colgroup = linesArea.querySelectorAll("table colgroup")[0];
   
@@ -877,7 +893,7 @@ const buildTable = (linesArea, state, repaint) => {
     anchor.title = name;
     
     const header = document.createElement("th");
-    header.style = "font-size: .7em; width: 40px;";
+    header.style = "font-size: .7em; width: 30px;";
     header.append(anchor);
     
     const colgroup = colgroups[key];
@@ -912,7 +928,19 @@ const buildTable = (linesArea, state, repaint) => {
     const row = document.createElement("tr");
     
     const sequence = document.createElement("td");
-    sequence.append(`${index+1}`);
+    sequence.textContent = `${index+1}  📈`;
+    
+    sequence.onclick = event => {
+      if(state.editingLine === index) {
+        // if we're already selected, unselect
+        state.editingLine = undefined;
+      } else {
+        state.editingLine = index;
+      }
+      
+      editingLineChanged();
+    };
+    
     row.append(sequence);
     
     const color = document.createElement("td");
@@ -921,34 +949,274 @@ const buildTable = (linesArea, state, repaint) => {
     row.append(color);
     
     Object.keys(segments).forEach(segment => {
-      const hasSegment = document.createElement("td");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.disabled = true;
+      checkbox.checked = line.segments.includes(segment);
       
-      if(line.segments.includes(segment)) {
-        hasSegment.append("Y");
-      }
+      const hasSegment = document.createElement("td");
+      hasSegment.append(checkbox);
       
       row.append(hasSegment);
     });
+    
+    const mouseover = event => {
+      row.style = `background: ${line.color}50;`;
+      
+      state.selectedLine = index;
+      
+      repaint();
+    };
+    
+    sequence.onmouseover = mouseover;
+    color.onmouseover = mouseover;
+    
+    const mouseout = event => {
+      row.style = `background: unset;`;
+      
+      state.selectedLine = undefined;
+      
+      repaint();
+    };
+    
+    sequence.onmouseout = mouseout;
+    color.onmouseout = mouseout;
     
     tableBody.append(row);
   });
 };
 
+const buildStringline = (timings, stringline, state) => {
+  const header = timings.querySelectorAll("h2")[0];
+  
+  const context = stringline.getContext("2d");
+  
+  context.clearRect(0, 0, stringlineCanvasSize.width, stringlineCanvasSize.height);
+  
+  if(state.editingLine === undefined) {
+    header.textContext = "Select a line to edit";
+    header.style = "background: unset;";
+    
+    stringline.style = "display: none;";
+    
+    return;
+  }
+  
+  const line = lines[state.editingLine];
+  
+  header.textContext = `Currently editing ${line.name} Line`;
+  header.style = `background: ${line.color}40;`;
+  
+  const minorGridColor = "#00000066";
+  
+  stringline.style = "";
+  
+  const chartTop = 20;
+  const chartBottom = stringlineCanvasSize.height - 50;
+  const chartLeft = 50;
+  const chartRight = stringlineCanvasSize.width - 20;
+  
+  // y axis labels and grid lines
+  const yAxisHeight = chartBottom - chartTop;
+  ["×:00", "×:45", "×:30", "×:15", "×:00", "×:45", "×:30", "×:15", "×:00"].forEach((label, index) => {
+    const yLoc = ((index/8) * yAxisHeight) + chartTop;
+    
+    // draw label
+    context.beginPath();
+    
+    context.lineWidth = 1;
+    context.font = "12px sans-serif";
+    context.textAlign = "end";
+    
+    // get text height to shift text down to vertically center on point
+    const textSize = context.measureText(label);
+    const yOffset = Math.round(textSize.actualBoundingBoxAscent/2);
+    
+    context.fillText(label, chartLeft - 5, yLoc + yOffset);
+    
+    context.stroke();
+    context.closePath();
+    
+    // draw gridline
+    context.beginPath();
+    
+    context.lineWidth = 1;
+    context.strokeStyle = minorGridColor;
+    
+    context.moveTo(chartLeft, yLoc);
+    context.lineTo(chartRight, yLoc);
+    
+    context.stroke();
+    context.closePath();
+  });
+  
+  let lineLength = 0;
+  let lineDuration = 0;
+  
+  const xAxisLabels = [];
+  const waypoints = [];
+  
+  let prevStation = line.stations[0];
+  
+  // start at origin
+  waypoints.push({ milepoint: 0, minute: 0 });
+  
+  xAxisLabels.push({
+    label: prevStation,
+    milepoint: 0,
+  });
+  
+  for(let i = 1; i < line.stations.length; i++) {
+    const currentStation = line.stations[i];
+    
+    const { links } = stations[currentStation];
+    
+    const [{ time, distance }, ] = links.filter(({ station }) => station === prevStation);
+    
+    lineLength += distance;
+    lineDuration += time;
+    
+    xAxisLabels.push({
+      label: currentStation,
+      milepoint: lineLength,
+    });
+    
+    // station arrival
+    waypoints.push({
+      milepoint: lineLength,
+      minute: lineDuration,
+    });
+    
+    if(i === line.stations.length - 1) {
+      // if this isn't the last station, add dwell time and another point for that
+      
+      // assume 30s dwell time
+      lineDuration += .5;
+      
+      // station departure
+      waypoints.push({
+        milepoint: lineLength,
+        minute: lineDuration,
+      });
+    }
+    
+    prevStation = currentStation;
+  };
+  
+  // x axis labels and grid lines
+  const xAxisLength = chartRight - chartLeft;
+  
+  // pixels per kilometer
+  const xResolution = xAxisLength / lineLength;
+  // pixels per minute
+  const yResolution = yAxisHeight / 120;
+  
+  xAxisLabels.forEach(({ label, milepoint }) => {
+    const xLoc = (milepoint * xResolution) + chartLeft;
+        
+    // draw label
+    context.beginPath();
+        
+    context.lineWidth = 1;
+    context.font = "12px sans-serif";
+    context.textAlign = "start";
+    
+    // get text height to shift text down to vertically center on point
+    const textSize = context.measureText(label);
+    const xOffset = Math.round(textSize.width/2);
+    
+    const yLoc = chartBottom + 5 + Math.round(textSize.actualBoundingBoxAscent);
+    context.fillText(label, xLoc - xOffset, yLoc);
+    
+    context.stroke();
+    context.closePath();
+        
+    // draw gridline
+    context.beginPath();
+    
+    context.lineWidth = 1;
+    context.strokeStyle = minorGridColor;
+    
+    context.moveTo(xLoc, chartTop);
+    context.lineTo(xLoc, chartBottom);
+    
+    context.stroke();
+    context.closePath();
+  });
+  
+  // draw stringline
+  
+  // convert waypoints to coordinates
+  const points = waypoints.map(({ milepoint, minute }) => {
+    // convert milepoint to x
+    const x = (milepoint * xResolution) + chartLeft;
+    
+    // convert minute to y
+    // time goes up, but the origin is top-left
+    const y = chartBottom - (minute * yResolution);
+    
+    return { x, y };
+  });
+  
+  context.beginPath();
+  
+  context.strokeStyle = line.color;
+  context.lineWidth = 2;
+  
+  const [firstPoint, ...otherPoints] = points;
+  
+  context.moveTo(firstPoint.x, firstPoint.y);
+  
+  otherPoints.forEach(({ x, y }) => {
+    context.lineTo(x, y);
+  });
+  
+  context.stroke();
+  context.closePath();
+  
+  // draw axes
+  // this is last so they show up on top
+  context.beginPath();
+  
+  context.strokeStyle = "black";
+  context.lineWidth = 2;
+  
+  context.moveTo(chartLeft, chartTop);
+  context.lineTo(chartLeft, chartBottom);
+  context.lineTo(chartRight, chartBottom);
+  
+  context.stroke();
+  context.closePath();
+};
+
 function main() {
   const state = {
     selectedSegment: undefined,
+    selectedLine: undefined,
+    editingLine: undefined,
   };
   
   const map = document.getElementById("bartmap");
-  map.width = canvasSize.width;
-  map.height = canvasSize.height;
+  map.width = mapCanvasSize.width;
+  map.height = mapCanvasSize.height;
   
   const repaint = () => {
     drawMap(map, state);
   };
   
+  const timings = document.getElementById("stringlineHeader");
+  const stringline = document.getElementById("stringline");
+  stringline.width = stringlineCanvasSize.width;
+  stringline.height = stringlineCanvasSize.height;
+  
+  const editingLineChanged = () => {
+    buildStringline(timings, stringline, state);
+  };
+  
   const linesArea = document.getElementById("lines");
-  buildTable(linesArea, state, repaint);
+  buildTable(linesArea, state, repaint, editingLineChanged);
+  
+  editingLineChanged();
   
   // draw in canvas
   repaint();
