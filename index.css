@@ -10,10 +10,10 @@ body {
 body {
   display: grid;
   grid-template:
-    "head head"     auto
-    "lines map"     auto
-    "timings map"   auto
-    "footer footer" auto / 1fr auto;
+    "head head"       auto
+    "lines map"       auto
+    "timings timings" auto
+    "footer footer"   auto / 1fr auto;
   gap: 1rem;
 }
 
@@ -35,6 +35,13 @@ header {
 
 footer {
   grid-area: footer;
+}
+
+/**** GENERAL STYLE ****/
+
+.frame {
+  border: 2px outset #242424;
+  background: #ffffff;
 }
 
 /**** LINES ****/
@@ -73,15 +80,14 @@ footer {
 
 #map .frame {
   margin-right: 1rem;
-  border: 2px outset #242424;
-  background: #ffffff;
 }
 
 /**** TIMINGS ****/
 
 /*
-#timings {
-  background: #eee;
+#timings .frame {
+  border: 2px outset #242424;
+  background: #ffffff;
 }
 */
 

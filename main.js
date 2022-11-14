@@ -1,4 +1,5 @@
-const canvasSize = { width: 700, height: 557 };
+const mapCanvasSize = { width: 700, height: 557 };
+const stringlineCanvasSize = { width: 1000, height: 750 };
 
 const waterColor = "#e4f1f7";
 const landColor = "#ffffff";
@@ -694,8 +695,8 @@ function precomputeStations() {
 
 const convertPoint = ({ x, y }) => {
   return {
-    x: Math.round(x * canvasSize.width), 
-    y: Math.round(y * canvasSize.height),
+    x: Math.round(x * mapCanvasSize.width), 
+    y: Math.round(y * mapCanvasSize.height),
   };
 };
 
@@ -778,7 +779,7 @@ const drawMap = (map, state) => {
   const context = map.getContext("2d");
   
   // clear all previous drawing
-  context.clearRect(0, 0, canvasSize.width, canvasSize.height);
+  context.clearRect(0, 0, mapCanvasSize.width, mapCanvasSize.height);
   
   // draw background
   landforms.forEach(({ color, path }) => {
@@ -998,6 +999,44 @@ const buildStringline = (timings, stringline, state) => {
   header.style = `background: ${line.color};`;
   
   stringline.style = "";
+  
+  const context = stringline.getContext("2d");
+  
+  const chartTop = 20;
+  const chartBottom = stringlineCanvasSize.height - 50;
+  const chartLeft = 50;
+  const chartRight = stringlineCanvasSize.width - 20;
+  
+  // draw axes
+  context.beginPath();
+  
+  context.strokeStyle = "black";
+  context.lineWidth = 2;
+  
+  debugger;
+  
+  context.moveTo(chartLeft, chartTop);
+  context.lineTo(chartLeft, chartBottom);
+  context.lineTo(chartRight, chartBottom);
+  
+  context.stroke();
+  context.closePath();
+  
+  // y axis labels
+  const yAxisHeight = chartBottom - chartTop;
+  ["X:60", "X:45", "X:30", "X:15", "X:00"].forEach((label, index) => {
+    const yLoc = ((index/4) * yAxisHeight) + chartTop;
+    const xLoc = 10;
+    
+    context.beginPath();
+    
+    context.lineWidth = 1;
+    context.font = "12px sans-serif";
+    context.fillText(label, xLoc, yLoc);
+    
+    context.stroke();
+    context.closePath();
+  });
 };
 
 function main() {
@@ -1008,8 +1047,8 @@ function main() {
   };
   
   const map = document.getElementById("bartmap");
-  map.width = canvasSize.width;
-  map.height = canvasSize.height;
+  map.width = mapCanvasSize.width;
+  map.height = mapCanvasSize.height;
   
   const repaint = () => {
     drawMap(map, state);
@@ -1017,6 +1056,9 @@ function main() {
   
   const timings = document.getElementById("stringlineHeader");
   const stringline = document.getElementById("stringline");
+  stringline.width = stringlineCanvasSize.width;
+  stringline.height = stringlineCanvasSize.height;
+  
   const editingLineChanged = () => {
     buildStringline(timings, stringline, state);
   };
