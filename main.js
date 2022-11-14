@@ -989,6 +989,10 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
 const buildStringline = (timings, stringline, state) => {
   const header = timings.querySelectorAll("h2")[0];
   
+  const context = stringline.getContext("2d");
+  
+  context.clearRect(0, 0, stringlineCanvasSize.width, stringlineCanvasSize.height);
+  
   if(state.editingLine === undefined) {
     header.textContext = "Select a line to edit";
     header.style = "background: unset;";
@@ -1001,24 +1005,181 @@ const buildStringline = (timings, stringline, state) => {
   const line = lines[state.editingLine];
   
   header.textContext = `Currently editing ${line.name} Line`;
-  header.style = `background: ${line.color};`;
+  header.style = `background: ${line.color}40;`;
+  
+  const minorGridColor = "#00000066";
   
   stringline.style = "";
-  
-  const context = stringline.getContext("2d");
   
   const chartTop = 20;
   const chartBottom = stringlineCanvasSize.height - 50;
   const chartLeft = 50;
   const chartRight = stringlineCanvasSize.width - 20;
   
+  // y axis labels and grid lines
+  const yAxisHeight = chartBottom - chartTop;
+  ["×:00", "×:45", "×:30", "×:15", "×:00", "×:45", "×:30", "×:15", "×:00"].forEach((label, index) => {
+    const yLoc = ((index/8) * yAxisHeight) + chartTop;
+    
+    // draw label
+    context.beginPath();
+    
+    context.lineWidth = 1;
+    context.font = "12px sans-serif";
+    context.textAlign = "end";
+    
+    // get text height to shift text down to vertically center on point
+    const textSize = context.measureText(label);
+    const yOffset = Math.round(textSize.actualBoundingBoxAscent/2);
+    
+    context.fillText(label, chartLeft - 5, yLoc + yOffset);
+    
+    context.stroke();
+    context.closePath();
+    
+    // draw gridline
+    context.beginPath();
+    
+    context.lineWidth = 1;
+    context.strokeStyle = minorGridColor;
+    
+    context.moveTo(chartLeft, yLoc);
+    context.lineTo(chartRight, yLoc);
+    
+    context.stroke();
+    context.closePath();
+  });
+  
+  let lineLength = 0;
+  let lineDuration = 0;
+  
+  const xAxisLabels = [];
+  const waypoints = [];
+  
+  let prevStation = line.stations[0];
+  
+  // start at origin
+  waypoints.push({ milepoint: 0, minute: 0 });
+  
+  xAxisLabels.push({
+    label: prevStation,
+    milepoint: 0,
+  });
+  
+  for(let i = 1; i < line.stations.length; i++) {
+    const currentStation = line.stations[i];
+    
+    const { links } = stations[currentStation];
+    
+    const [{ time, distance }, ] = links.filter(({ station }) => station === prevStation);
+    
+    lineLength += distance;
+    lineDuration += time;
+    
+    xAxisLabels.push({
+      label: currentStation,
+      milepoint: lineLength,
+    });
+    
+    // station arrival
+    waypoints.push({
+      milepoint: lineLength,
+      minute: lineDuration,
+    });
+    
+    if(i === line.stations.length - 1) {
+      // if this isn't the last station, add dwell time and another point for that
+      
+      // assume 30s dwell time
+      lineDuration += .5;
+      
+      // station departure
+      waypoints.push({
+        milepoint: lineLength,
+        minute: lineDuration,
+      });
+    }
+    
+    prevStation = currentStation;
+  };
+  
+  // x axis labels and grid lines
+  const xAxisLength = chartRight - chartLeft;
+  
+  // pixels per kilometer
+  const xResolution = xAxisLength / lineLength;
+  // pixels per minute
+  const yResolution = yAxisHeight / 120;
+  
+  xAxisLabels.forEach(({ label, milepoint }) => {
+    const xLoc = (milepoint * xResolution) + chartLeft;
+        
+    // draw label
+    context.beginPath();
+        
+    context.lineWidth = 1;
+    context.font = "12px sans-serif";
+    context.textAlign = "start";
+    
+    // get text height to shift text down to vertically center on point
+    const textSize = context.measureText(label);
+    const xOffset = Math.round(textSize.width/2);
+    
+    const yLoc = chartBottom + 5 + Math.round(textSize.actualBoundingBoxAscent);
+    context.fillText(label, xLoc - xOffset, yLoc);
+    
+    context.stroke();
+    context.closePath();
+        
+    // draw gridline
+    context.beginPath();
+    
+    context.lineWidth = 1;
+    context.strokeStyle = minorGridColor;
+    
+    context.moveTo(xLoc, chartTop);
+    context.lineTo(xLoc, chartBottom);
+    
+    context.stroke();
+    context.closePath();
+  });
+  
+  // draw stringline
+  
+  // convert waypoints to coordinates
+  const points = waypoints.map(({ milepoint, minute }) => {
+    // convert milepoint to x
+    const x = (milepoint * xResolution) + chartLeft;
+    
+    // convert minute to y
+    // time goes up, but the origin is top-left
+    const y = chartBottom - (minute * yResolution);
+    
+    return { x, y };
+  });
+  
+  context.beginPath();
+  
+  context.strokeStyle = line.color;
+  context.lineWidth = 2;
+  
+  const [firstPoint, ...otherPoints] = points;
+  
+  context.moveTo(firstPoint.x, firstPoint.y);
+  
+  otherPoints.forEach(({ x, y }) => {
+    context.lineTo(x, y);
+  });
+  
+  context.stroke();
+  context.closePath();
+  
   // draw axes
+  // this is last so they show up on top
   context.beginPath();
   
   context.strokeStyle = "black";
   context.lineWidth = 2;
-  
-  debugger;
   
   context.moveTo(chartLeft, chartTop);
   context.lineTo(chartLeft, chartBottom);
@@ -1026,22 +1187,6 @@ const buildStringline = (timings, stringline, state) => {
   
   context.stroke();
   context.closePath();
-  
-  // y axis labels
-  const yAxisHeight = chartBottom - chartTop;
-  ["X:60", "X:45", "X:30", "X:15", "X:00"].forEach((label, index) => {
-    const yLoc = ((index/4) * yAxisHeight) + chartTop;
-    const xLoc = 10;
-    
-    context.beginPath();
-    
-    context.lineWidth = 1;
-    context.font = "12px sans-serif";
-    context.fillText(label, xLoc, yLoc);
-    
-    context.stroke();
-    context.closePath();
-  });
 };
 
 function main() {
