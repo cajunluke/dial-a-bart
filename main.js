@@ -68,17 +68,9 @@ const segments = {
 };
 
 const lines = [{
-  name: "Orange",
-  color: "#f8a51a",
-  segments: ["R", "K", "AL", "A", "S"],
-}, {
   name: "Yellow",
   color: "#ffe802",
   segments: ["C", "E", "K", "M", "W", "Y"],
-}, {
-  name: "Blue",
-  color: "#01aced",
-  segments: ["M", "AL", "L"],
 }, {
   name: "Red",
   color: "#ec1c23",
@@ -87,6 +79,14 @@ const lines = [{
   name: "Green",
   color: "#4db947",
   segments: ["M", "AL", "A", "S"],
+}, {
+  name: "Blue",
+  color: "#01aced",
+  segments: ["M", "AL", "L"],
+}, {
+  name: "Orange",
+  color: "#f8a51a",
+  segments: ["R", "K", "AL", "A", "S"],
 }, {
   name: "Beige",
   color: "#a8a280",
@@ -173,6 +173,7 @@ const stations = {
       { station: "lake", time: 3, distance: 1.10 },
     ],
     location: { x: .401, y: .400 },
+    angle: 90,
   },
   ["16th"]: {
     name: "16th St. Mission",
@@ -181,6 +182,7 @@ const stations = {
       { station: "24th", time: 2, distance: 1.46 },
     ],
     location: { x: .218, y: .566 },
+    angle: 90,
   },
   ["19th"]: {
     name: "19th St. Oakland",
@@ -189,6 +191,7 @@ const stations = {
       { station: "mcar", time: 4, distance: 2.41 },
     ],
     location: { x: .401, y: .369 },
+    angle: 90,
   },
   ["24th"]: {
     name: "24th St. Mission",
@@ -197,6 +200,7 @@ const stations = {
       { station: "glen", time: 3, distance: 2.65 },
     ],
     location: { x: .218, y: .593 },
+    angle: 90,
   },
   antc: {
     name: "Antioch",
@@ -204,6 +208,7 @@ const stations = {
       { station: "pctr", time: 7, distance: 9.89 },
     ],
     location: { x: .764, y: .119 },
+    angle: 180,
   },
   ashb: {
     name: "Ashby",
@@ -213,6 +218,7 @@ const stations = {
       { station: "dbrk", time: 2, distance: 1.94 },
     ],
     location: { x: .371, y: .281 },
+    angle: 135,
   },
   balb: {
     name: "Balboa Park",
@@ -221,6 +227,7 @@ const stations = {
       { station: "daly", time: 4, distance: 2.88 },
     ],
     location: { x: .218, y: .651 },
+    angle: 90,
   },
   bayf: {
     name: "Bay Fair",
@@ -230,6 +237,7 @@ const stations = {
       { station: "hayw", time: 4, distance: 4.60 },
     ],
     location: { x: .520, y: .591 },
+    angle: 135,
   },
   bery: {
     name: "Berryessa / North San José",
@@ -237,6 +245,7 @@ const stations = {
       { station: "mlpt", time: 4, distance: 4.86 },
     ],
     location: { x: .689, y: .912 },
+    angle: 90,
   },
   cast: {
     name: "Castro Valley",
@@ -245,6 +254,7 @@ const stations = {
       { station: "wdub", time: 10, distance: 13.56 },
     ],
     location: { x: .620, y: .606 },
+    angle: 180,
   },
   civc: {
     name: "Civic Center / UN Plaza",
@@ -253,6 +263,7 @@ const stations = {
       { station: "16th", time: 2, distance: 1.78 },
     ],
     location: { x: .235, y: .518 },
+    angle: 45,
   },
   cols: {
     name: "Coliseum",
@@ -262,6 +273,7 @@ const stations = {
       { station: "oakl", time: 9, distance: 4.99 },
     ],
     location: { x: .473, y: .533 },
+    angle: 135,
   },
   colm: {
     name: "Colma",
@@ -270,6 +282,7 @@ const stations = {
       { station: "ssan", time: 3, distance: 3.03 },
     ],
     location: { x: .257, y: .729 },
+    angle: 135,
   },
   conc: {
     name: "Concord",
@@ -278,6 +291,7 @@ const stations = {
       { station: "phil", time: 5, distance: 6.52 },
     ],
     location: { x: .542, y: .145 },
+    angle: 45,
   },
   daly: {
     name: "Daly City",
@@ -286,6 +300,7 @@ const stations = {
       { station: "colm", time: 4, distance: 2.58 },
     ],
     location: { x: .235, y: .701 },
+    angle: 135,
   },
   dbrk: {
     name: "Downtown Berkeley",
@@ -294,6 +309,7 @@ const stations = {
       { station: "nbrk", time: 3, distance: 1.68 },
     ],
     location: { x: .351, y: .251 },
+    angle: 135,
   },
   dubl: {
     name: "Dublin / Pleasanton",
@@ -301,6 +317,7 @@ const stations = {
       { station: "wdub", time: 3, distance: 2.58 },
     ],
     location: { x: .769, y: .606 },
+    angle: 180,
   },
   deln: {
     name: "El Cerrito del Norte",
@@ -309,6 +326,7 @@ const stations = {
       { station: "plza", time: 3, distance: 2.96 },
     ],
     location: { x: .288, y: .171 },
+    angle: 135,
   },
   plza: {
     name: "El Cerrito Plaza",
@@ -317,6 +335,7 @@ const stations = {
       { station: "nbrk", time: 3, distance: 3.56 },
     ],
     location: { x: .310, y: .199 },
+    angle: 135,
   },
   embr: {
     name: "Embarcadero",
@@ -325,6 +344,7 @@ const stations = {
       { station: "mont", time: 1, distance: .547 },
     ],
     location: { x: .280, y: .458 },
+    angle: 45,
   },
   frmt: {
     name: "Fremont",
@@ -333,6 +353,7 @@ const stations = {
       { station: "warm", time: 6, distance: 7.49 },
     ],
     location: { x: .665, y: .771 },
+    angle: 135,
   },
   ftvl: {
     name: "Fruitvale",
@@ -341,6 +362,7 @@ const stations = {
       { station: "cols", time: 4, distance: 3.38 },
     ],
     location: { x: .449, y: .503 },
+    angle: 135,
   },
   glen: {
     name: "Glen Park",
@@ -349,6 +371,7 @@ const stations = {
       { station: "balb", time: 3, distance: 1.83 },
     ],
     location: { x: .218, y: .622 },
+    angle: 90,
   },
   hayw: {
     name: "Hayward",
@@ -357,6 +380,7 @@ const stations = {
       { station: "shay", time: 4, distance: 4.74 },
     ],
     location: { x: .565, y: .647 },
+    angle: 135,
   },
   lafy: {
     name: "Lafayette",
@@ -365,6 +389,7 @@ const stations = {
       { station: "wcrk", time: 5, distance: 5.56 },
     ],
     location: { x: .474, y: .224 },
+    angle: 45,
   },
   lake: {
     name: "Lake Merritt",
@@ -374,6 +399,7 @@ const stations = {
       { station: "ftvl", time: 4, distance: 4.40 },
     ],
     location: { x: .425, y: .472 },
+    angle: 135,
   },
   mcar: {
     name: "MacArthur",
@@ -383,6 +409,7 @@ const stations = {
       { station: "19th", time: 3, distance: 2.41 },
     ],
     location: { x: .401, y: .338 },
+    angle: 90,
   },
   mlbr: {
     name: "Millbrae",
@@ -391,6 +418,7 @@ const stations = {
       { station: "sfia", time: 5, distance: 2.70 },
     ],
     location: { x: .327, y: .822 },
+    angle: 0,
   },
   mlpt: {
     name: "Milpitas",
@@ -399,6 +427,7 @@ const stations = {
       { station: "bery", time: 4, distance: 4.86 },
     ],
     location: { x: .689, y: .870 },
+    angle: 90,
   },
   mont: {
     name: "Montgomery St.",
@@ -407,6 +436,7 @@ const stations = {
       { station: "powl", time: 2, distance: .804 },
     ],
     location: { x: .266, y: .478 },
+    angle: 45,
   },
   nbrk: {
     name: "North Berkeley",
@@ -415,6 +445,7 @@ const stations = {
       { station: "plza", time: 3, distance: 3.56 },
     ],
     location: { x: .332, y: .225 },
+    angle: 135,
   },
   ncon: {
     name: "North Concord / Martinez",
@@ -423,6 +454,7 @@ const stations = {
       { station: "conc", time: 3, distance: 3.61 },
     ],
     location: { x: .585, y: .119 },
+    angle: 180,
   },
   oakl: {
     name: "Oakland International Airport",
@@ -430,6 +462,7 @@ const stations = {
       { station: "cols", time: 9, distance: 4.99 },
     ],
     location: { x: .457, y: .605 },
+    angle: 45,
   },
   orin: {
     name: "Orinda",
@@ -438,6 +471,7 @@ const stations = {
       { station: "lafy", time: 4, distance: 6.05 },
     ],
     location: { x: .455, y: .249 },
+    angle: 45,
   },
   pitt: {
     name: "Pittsburg / Bay Point",
@@ -446,6 +480,7 @@ const stations = {
       { station: "ncon", time: 6, distance: 7.81 },
     ],
     location: { x: .648, y: .119 },
+    angle: 180,
   },
   pctr: {
     name: "Pittsburg Center",
@@ -454,6 +489,7 @@ const stations = {
       { station: "antc", time: 7, distance: 9.89 },
     ],
     location: { x: .713, y: .119 },
+    angle: 180,
   },
   phil: {
     name: "Pleasant Hill / Contra Costa Centre",
@@ -462,6 +498,7 @@ const stations = {
       { station: "wcrk", time: 3, distance: 2.77 },
     ],
     location: { x: .518, y: .171 },
+    angle: 45,
   },
   powl: {
     name: "Powell St.",
@@ -470,6 +507,7 @@ const stations = {
       { station: "civc", time: 1, distance: .749 },
     ],
     location: { x: .250, y: .496 },
+    angle: 45,
   },
   rich: {
     name: "Richmond",
@@ -477,6 +515,7 @@ const stations = {
       { station: "deln", time: 4, distance: 3.72 },
     ],
     location: { x: .269, y: .142 },
+    angle: 135,
   },
   rock: {
     name: "Rockridge",
@@ -485,6 +524,7 @@ const stations = {
       { station: "mcar", time: 2, distance: 2.53 },
     ],
     location: { x: .432, y: .279 },
+    angle: 45,
   },
   sbrn: {
     name: "San Bruno",
@@ -494,6 +534,7 @@ const stations = {
       { station: "mlbr", time: 5, distance: 4.93 },
     ],
     location: { x: .297, y: .789 },
+    angle: 135,
   },
   sfia: {
     name: "San Francisco International Airport",
@@ -502,6 +543,7 @@ const stations = {
       { station: "sbrn", time: 4, distance: 3.55 },
     ],
     location: { x: .362, y: .798 },
+    angle: 90,
   },
   sanl: {
     name: "San Leandro",
@@ -510,6 +552,7 @@ const stations = {
       { station: "cols", time: 4, distance: 4.76 },
     ],
     location: { x: .496, y: .561 },
+    angle: 135,
   },
   shay: {
     name: "South Hayward",
@@ -518,6 +561,7 @@ const stations = {
       { station: "ucty", time: 5, distance: 6.04 },
     ],
     location: { x: .598, y: .689 },
+    angle: 135,
   },
   ssan: {
     name: "South San Francisco",
@@ -526,6 +570,7 @@ const stations = {
       { station: "colm", time: 3, distance: 3.03 },
     ],
     location: { x: .279, y: .755 },
+    angle: 135,
   },
   ucty: {
     name: "Union City",
@@ -534,6 +579,7 @@ const stations = {
       { station: "frmt", time: 5, distance: 5.16 },
     ],
     location: { x: .631, y: .729 },
+    angle: 135,
   },
   wcrk: {
     name: "Walnut Creek",
@@ -542,6 +588,7 @@ const stations = {
       { station: "lafy", time: 5, distance: 5.56 },
     ],
     location: { x: .497, y: .196 },
+    angle: 45,
   },
   warm: {
     name: "Warm Springs",
@@ -550,6 +597,7 @@ const stations = {
       { station: "frmt", time: 6, distance: 7.49 },
     ],
     location: { x: .689, y: .831 },
+    angle: 90,
   },
   wdub: {
     name: "West Dublin / Pleasanton",
@@ -558,6 +606,7 @@ const stations = {
       { station: "cast", time: 10, distance: 13.56 },
     ],
     location: { x: .708, y: .606 },
+    angle: 180,
   },
   woak: {
     name: "West Oakland",
@@ -567,11 +616,16 @@ const stations = {
       { station: "embr", time: 7, distance: 9.49 },
     ],
     location: { x: .370, y: .439 },
+    angle: 0,
   },
 };
 
 function dataCheck() {
-  for (const [code, { name, links }] of Object.entries(stations)) {
+  for (const [code, { name, links, angle }] of Object.entries(stations)) {
+    if(angle % 45 !== 0) {
+      console.log(`${name} (${code}) has invalid angle "${angle}"`);
+    }
+    
     links.forEach(link => {
       const outbound = link.station;
       
@@ -712,7 +766,7 @@ const drawLines = (context, lines, state) => {
     context.lineWidth = isSelected ? 5 : 3;
     
     const points = line.stations.map(station => {
-      const { location, visitingLines } = stations[station];
+      const { location, visitingLines, angle } = stations[station];
       
       const point = convertPoint(location);
       
@@ -726,47 +780,24 @@ const drawLines = (context, lines, state) => {
       visitedLines[station] = alreadyVisited + 1;
       
       // offset line by how many have already been here
-      // TODO fancy algorithm
+
+      const lineWidth = 3;
+            
+      const offset = lineWidth * (alreadyVisited - ((visitingLines - 1) / 2.));
       
-      // also TODO slanted lines should be offset by pythagoras
+      const xOffset = offset * Math.sin(angle / 180 * Math.PI);
+      const yOffset = offset * Math.cos(angle / 180 * Math.PI);
       
-      const increment = 3 * alreadyVisited;
-      
-      if(visitingLines === 2) {
-        // offset by half a linewidth
-        // hard-coded because it's shit anyway
-        
-        return {
-          x: (point.x - 1.5) + increment,
-          y: point.y,
-        };
-      }
-      
-      if(visitingLines === 3) {
-        // offset by whole linewidth
-        // hard-coded because it's shit anyway
-        
-        return {
-          x: (point.x - 3) + increment,
-          y: point.y,
-        };
-      }
-      
-      if(visitingLines === 4) {
-        // offset by half again linewidth
-        // hard-coded because it's shit anyway
-        
-        return {
-          x: (point.x - 4.5) + increment,
-          y: point.y,
-        };
-      }
+      return {
+        x: point.x + xOffset,
+        y: point.y + yOffset,
+      };
     });
     
-    const startPoint = points[0];
+    const [startPoint, ...otherPoints] = points;
     context.moveTo(startPoint.x, startPoint.y);
     
-    points.forEach(({x, y}) => {
+    otherPoints.forEach(({x, y}) => {
       context.lineTo(x, y);
     });
     
@@ -808,11 +839,31 @@ const drawMap = (map, state) => {
   // if no selected segment, highlight nothing
   const highlightStations = segments[state.selectedSegment]?.stations ?? [];
   
-  Object.entries(stations).forEach(([code, station]) => {
-    const {x, y} = convertPoint(station.location);
+  Object.entries(stations).forEach(([code, { location, angle }]) => {
+    const { x, y } = convertPoint(location);
+    
+    // draw line to station text along station angle
+        
+    context.beginPath();
+    
+    let lineLength = 10;
+    
+    context.strokeStyle = "#7d7d7d";
+    context.lineWidth = 2;
+    
+    context.moveTo(x, y);
+    
+    let xOffset = lineLength * Math.sin(angle / 180 * Math.PI);
+    let yOffset = lineLength * Math.cos(angle / 180 * Math.PI);
+    
+    context.lineTo(x + xOffset, y + yOffset);
+    
+    context.stroke();
+    context.closePath();
     
     context.beginPath();
     
+    // draw station circle (blue if highlighted)
     if(highlightStations.includes(code)) {
       context.fillStyle = "cornflowerblue";
     } else {
@@ -827,12 +878,18 @@ const drawMap = (map, state) => {
     context.stroke();
     context.closePath();
     
+    // draw station name
     context.beginPath();
+    
+    // extend "line" to reach text
+    lineLength += 3;
+    xOffset = lineLength * Math.sin(angle / 180 * Math.PI);
+    yOffset = lineLength * Math.cos(angle / 180 * Math.PI);
     
     context.fillStyle = "black";
     context.lineWidth = 1;
     context.font = "11px sans-serif";
-    context.fillText(code, x + 10, y + 4);
+    context.fillText(code, x + xOffset, y + yOffset + 2);
     
     context.closePath();
   });
