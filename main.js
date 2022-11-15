@@ -750,7 +750,7 @@ const drawLines = (context, lines, state) => {
     context.lineWidth = 3;
     
     const points = line.stations.map(station => {
-      const { location, visitingLines } = stations[station];
+      const { location, visitingLines, angle } = stations[station];
       
       const point = convertPoint(location);
       
@@ -846,8 +846,27 @@ const drawMap = (map, state) => {
   // if no selected segment, highlight nothing
   const highlightStations = segments[state.selectedSegment]?.stations ?? [];
   
-  Object.entries(stations).forEach(([code, station]) => {
-    const {x, y} = convertPoint(station.location);
+  Object.entries(stations).forEach(([code, { location, angle }]) => {
+    const { x, y } = convertPoint(location);
+    
+    // draw line to station text along station angle
+        
+    context.beginPath();
+    
+    let lineLength = 10;
+    
+    context.strokeStyle = "#7d7d7d";
+    context.lineWidth = 2;
+    
+    context.moveTo(x, y);
+    
+    let xOffset = lineLength * Math.sin(angle / 180 * Math.PI);
+    let yOffset = lineLength * Math.cos(angle / 180 * Math.PI);
+    
+    context.lineTo(x + xOffset, y + yOffset);
+    
+    context.stroke();
+    context.closePath();
     
     context.beginPath();
     
@@ -869,10 +888,15 @@ const drawMap = (map, state) => {
     // draw station name
     context.beginPath();
     
+    // extend "line" to reach text
+    lineLength += 3;
+    xOffset = lineLength * Math.sin(angle / 180 * Math.PI);
+    yOffset = lineLength * Math.cos(angle / 180 * Math.PI);
+    
     context.fillStyle = "black";
     context.lineWidth = 1;
     context.font = "11px sans-serif";
-    context.fillText(code, x + 10, y + 4);
+    context.fillText(code, x + xOffset, y + yOffset + 2);
     
     context.closePath();
   });
