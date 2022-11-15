@@ -764,47 +764,24 @@ const drawLines = (context, lines, state) => {
       visitedLines[station] = alreadyVisited + 1;
       
       // offset line by how many have already been here
-      // TODO fancy algorithm
+
+      const lineWidth = 3;
+            
+      const offset = lineWidth * (alreadyVisited - ((visitingLines - 1) / 2.));
       
-      // also TODO slanted lines should be offset by pythagoras
+      const xOffset = offset * Math.sin(angle / 180 * Math.PI);
+      const yOffset = offset * Math.cos(angle / 180 * Math.PI);
       
-      const increment = 3 * alreadyVisited;
-      
-      if(visitingLines === 2) {
-        // offset by half a linewidth
-        // hard-coded because it's shit anyway
-        
-        return {
-          x: (point.x - 1.5) + increment,
-          y: point.y,
-        };
-      }
-      
-      if(visitingLines === 3) {
-        // offset by whole linewidth
-        // hard-coded because it's shit anyway
-        
-        return {
-          x: (point.x - 3) + increment,
-          y: point.y,
-        };
-      }
-      
-      if(visitingLines === 4) {
-        // offset by half again linewidth
-        // hard-coded because it's shit anyway
-        
-        return {
-          x: (point.x - 4.5) + increment,
-          y: point.y,
-        };
-      }
+      return {
+        x: point.x + xOffset,
+        y: point.y + yOffset,
+      };
     });
     
-    const startPoint = points[0];
+    const [startPoint, ...otherPoints] = points;
     context.moveTo(startPoint.x, startPoint.y);
     
-    points.forEach(({x, y}) => {
+    otherPoints.forEach(({x, y}) => {
       context.lineTo(x, y);
     });
     
