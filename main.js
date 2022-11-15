@@ -67,17 +67,9 @@ const segments = {
 };
 
 const lines = [{
-  name: "Orange",
-  color: "#f8a51a",
-  segments: ["R", "K", "AL", "A", "S"],
-}, {
   name: "Yellow",
   color: "#ffe802",
   segments: ["C", "E", "K", "M", "W", "Y"],
-}, {
-  name: "Blue",
-  color: "#01aced",
-  segments: ["M", "AL", "L"],
 }, {
   name: "Red",
   color: "#ec1c23",
@@ -86,6 +78,14 @@ const lines = [{
   name: "Green",
   color: "#4db947",
   segments: ["M", "AL", "A", "S"],
+}, {
+  name: "Blue",
+  color: "#01aced",
+  segments: ["M", "AL", "L"],
+}, {
+  name: "Orange",
+  color: "#f8a51a",
+  segments: ["R", "K", "AL", "A", "S"],
 }, {
   name: "Beige",
   color: "#a8a280",
@@ -611,7 +611,7 @@ const stations = {
       { station: "embr", time: 0, distance: 0 },
     ],
     location: { x: .370, y: .439 },
-    angle: 180,
+    angle: 0,
   },
 };
 
