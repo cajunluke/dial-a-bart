@@ -1044,26 +1044,32 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
   });
 };
 
-const buildStringline = (timings, stringline, state) => {
-  const header = timings.querySelectorAll("p")[0];
+const buildStringline = (timings, stringlineHeader, stringline, state) => {
+  if(state.editingLine === undefined) {
+    timings.style = "display: none;";
+    
+    return;
+  }
+  
+  timings.style = "";
   
   const context = stringline.getContext("2d");
   
   context.clearRect(0, 0, stringlineCanvasSize.width, stringlineCanvasSize.height);
   
-  if(state.editingLine === undefined) {
-    header.innerText = "Select a line to edit";
-    header.style = "background: unset;";
-    
-    stringline.style = "display: none;";
-    
-    return;
-  }
-  
   const line = lines[state.editingLine];
+    
+  const terminals = [line.stations.at(0), line.stations.at(-1)]
+    .map(station => stations[station])
+    .map(station => station.name)
+    .sort()
+    .join(" – ");
   
-  header.innerText = `Currently editing ${line.name} Line`;
-  header.style = `background: ${line.color}40;`;
+  console.table(terminals);
+  
+  const header = stringlineHeader.querySelectorAll("#lineID")[0];
+  header.innerText = `${line.name} Line  (${terminals})`;
+  stringlineHeader.style = `background: ${line.color}50;`;
   
   const minorGridColor = "#00000066";
   
@@ -1262,13 +1268,16 @@ function main() {
     drawMap(map, state);
   };
   
-  const timings = document.getElementById("stringlineHeader");
+  const timings = document.getElementById("timings");
+  const stringlineHeader = document.getElementById("stringlineHeader");
+  stringlineHeader.style = `width: ${stringlineCanvasSize.width}px;`;
+  
   const stringline = document.getElementById("stringline");
   stringline.width = stringlineCanvasSize.width;
   stringline.height = stringlineCanvasSize.height;
   
   const editingLineChanged = () => {
-    buildStringline(timings, stringline, state);
+    buildStringline(timings, stringlineHeader, stringline, state);
   };
   
   const linesArea = document.getElementById("lines");

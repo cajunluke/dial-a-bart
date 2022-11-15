@@ -8,9 +8,24 @@
   </head>
   <body>
     <header>
-      <h1><a href="/">Dial-A-BART</a></h1>
+      <h1>🚈 <a href="/">Dial-A-BART</a></h1>
     </header>
     <div id="lines">
+      <div class="copy">
+        <p>
+          If you've ever wanted to see why BART's headways are the way they are
+          or why trains only visit the outer edges of the system every fifteen
+          minutes, this page should help you see why BART made those decisions
+          and allow you to experiment with making your own!
+        </p>
+        <p>
+          Mousing over the line segment headers will highlight that segment's
+          stations on the map, while mousing over the row headers will
+          highlight that line. Clicking on the chart icon (📈) will show the
+          stringline for that line.
+        </p>
+      </div>
+      <hr />
       <table>
         <colgroup />
         <thead />
@@ -22,14 +37,15 @@
     </div>
     <div id="timings">
       <div id="stringlineHeader">
-        <p>Select a line to edit</>
+        <span id="lineID"></span>
       </div>
-      <canvas class="frame" id="stringline" />
+      <canvas id="stringline" />
     </div>
     <footer>
-      Created by Bex Fortin.
-      Data gleaned from <a href="https://www.bart.gov/">BART</a>.
-      <a href="https://github.com/cajunluke/dial-a-bart">Source for this page.</a>
+      Created by Bex Fortin. Copyright 2022.
+      Data from <a href="https://www.bart.gov/">BART</a> schedules as of November 2022.
+      See source and provide feedback at 
+      <a href="https://github.com/cajunluke/dial-a-bart">github</a>.
     </footer>
     <script src="./main.js"></script>
   </body>
