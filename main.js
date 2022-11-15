@@ -1155,11 +1155,17 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
       minute: lineDuration,
     });
     
-    if(i === line.stations.length - 1) {
+    if(i < line.stations.length - 1) {
       // if this isn't the last station, add dwell time and another point for that
       
-      // assume 30s dwell time
-      lineDuration += .5;
+      if(currentStation === "mcar" && prevStation === "ashb" && line.stations.includes("lake")) {
+        // this is the orange line, delay it by 3 minutes
+        // (only valid southbound)
+        lineDuration += 3;
+      } else {
+        // everywhere else, assume 30s dwell time
+        lineDuration += .5;
+      }
       
       // station departure
       waypoints.push({
