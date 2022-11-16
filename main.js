@@ -712,6 +712,10 @@ function precomputeStations() {
       });
     });
     
+    if(endpoint === undefined) {
+      throw `A line endpoint was not found for ${line.name}! You may have tried to declare a short-turn line.`;
+    }
+    
     // our output data structure
     line.stations = [];
     
