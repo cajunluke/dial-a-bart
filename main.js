@@ -753,6 +753,13 @@ function precomputeStations() {
       delete nodes[nextStation];
     }
     
+    // normalize line direction
+    const firstStation = line.stations[0];
+    if(firstStation === "dubl" || firstStation === "bery") {
+      // blue and green should start at daly even if they don't want to
+      line.stations.reverse();
+    }
+    
     // compute runs based on stations, headway, and duration
     
     line.stationAxisLabels = [];
