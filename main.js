@@ -71,26 +71,38 @@ const lines = [{
   name: "Yellow",
   color: "#ffe802",
   segments: ["C", "E", "K", "M", "W", "Y"],
+  headway: 15,
+  offset: [3, 10],
 }, {
   name: "Red",
   color: "#ec1c23",
   segments: ["R", "K", "M", "W"],
+  headway: 15,
+  offset: [5, 10],
 }, {
   name: "Green",
   color: "#4db947",
   segments: ["M", "AL", "A", "S"],
+  headway: 15,
+  offset: [5, 10],
 }, {
   name: "Blue",
   color: "#01aced",
   segments: ["M", "AL", "L"],
+  headway: 15,
+  offset: [5, 10],
 }, {
   name: "Orange",
   color: "#f8a51a",
   segments: ["R", "K", "AL", "A", "S"],
+  headway: 15,
+  offset: [5, 10],
 }, {
   name: "Beige",
   color: "#a8a280",
   segments: ["H"],
+  headway: 9,
+  offset: [0, 0],
 }];
 
 const landforms = [{
@@ -740,6 +752,107 @@ function precomputeStations() {
       // and remove it from the nodes collection
       delete nodes[nextStation];
     }
+    
+    // compute runs based on stations, headway, and duration
+    
+    line.stationAxisLabels = [];
+    const waypoints = [];
+    
+    let lineLength = 0;
+    let lineDuration = 0;
+    
+    let prevStation = line.stations[0];
+    
+    // start at origin
+    waypoints.push({
+      station: prevStation,
+      milepoint: 0,
+      minute: 0,
+    });
+    
+    line.stationAxisLabels.push({
+      label: prevStation,
+      milepoint: 0,
+    });
+    
+    for(let i = 1; i < line.stations.length; i++) {
+      const currentStation = line.stations[i];
+      
+      const { links } = stations[prevStation];
+      
+      // get the link from the previous station to the current station
+      const [{ time, distance }, ] = links.filter(({ station }) => station === currentStation);
+      
+      lineLength += distance;
+      lineDuration += time;
+      
+      line.stationAxisLabels.push({
+        label: currentStation,
+        milepoint: lineLength,
+      });
+      
+      // station arrival
+      waypoints.push({
+        station: currentStation,
+        milepoint: lineLength,
+        minute: lineDuration,
+      });
+      
+      if(i < line.stations.length - 1) {
+        // if this isn't the last station, add dwell time and another point for that
+        
+        if(currentStation === "mcar" && prevStation === "ashb" && line.stations.includes("lake")) {
+          // this is the orange line, delay it by 3 minutes
+          // (only valid southbound)
+          lineDuration += 3;
+        } else {
+          // everywhere else, assume 30s dwell time
+          lineDuration += .5;
+        }
+        
+        // station departure
+        waypoints.push({
+          station: currentStation,
+          milepoint: lineLength,
+          minute: lineDuration,
+        });
+      }
+      
+      prevStation = currentStation;
+    }
+    
+    // stick computed length and duration in line data
+    line.lineLength = lineLength;
+    line.lineDuration = lineDuration;
+    
+    // find all the runs that show at all in the chart area
+    // the lower bound is the earliest run that ends in the chart area
+    //   • this is the run that starts after T-(lineDuration) minutes
+    // the upper bound is the latest run that starts in the chart area
+    //   • this is the run that starts before T+120 minutes
+        
+    const runStarts = [];
+    
+    // TODO use other offset for reverse direction
+    const baseOffset = line.offset[0];
+    
+    // find the runs between T0 and T+120
+    for(let s = baseOffset; s < 120; s += line.headway) {
+      runStarts.push(s);
+    }
+    // find the runs between T0 and T-(lineDuration)
+    for(let s = baseOffset - line.headway; s > -lineDuration; s -= line.headway) {
+      runStarts.push(s);
+    }
+    
+    // for neatness, keep them in order
+    runStarts.sort((a, b) => a - b);
+    
+    line.runs = runStarts.map(startPoint => {
+      return waypoints.map(({ station, milepoint, minute }) => {
+        return { station, milepoint, minute: minute + startPoint };
+      });
+    });
   });
   
   lines.forEach(line => {
@@ -1072,10 +1185,10 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
   console.table(terminals);
   
   const header = stringlineHeader.querySelectorAll("#lineID")[0];
-  header.innerText = `${line.name} Line  (${terminals})`;
+  header.innerText = `${line.name} Line   (${terminals})`;
   stringlineHeader.style = `background: ${line.color}50;`;
   
-  const minorGridColor = "#00000066";
+  const minorGridColor = "#00000033";
   
   stringline.style = "";
   
@@ -1118,80 +1231,61 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
     context.closePath();
   });
   
-  let lineLength = 0;
-  let lineDuration = 0;
-  
-  const xAxisLabels = [];
-  const waypoints = [];
-  
-  let prevStation = line.stations[0];
-  
-  // start at origin
-  waypoints.push({ milepoint: 0, minute: 0 });
-  
-  xAxisLabels.push({
-    label: prevStation,
-    milepoint: 0,
-  });
-  
-  for(let i = 1; i < line.stations.length; i++) {
-    const currentStation = line.stations[i];
-    
-    const { links } = stations[currentStation];
-    
-    const [{ time, distance }, ] = links.filter(({ station }) => station === prevStation);
-    
-    lineLength += distance;
-    lineDuration += time;
-    
-    xAxisLabels.push({
-      label: currentStation,
-      milepoint: lineLength,
-    });
-    
-    // station arrival
-    waypoints.push({
-      milepoint: lineLength,
-      minute: lineDuration,
-    });
-    
-    if(i < line.stations.length - 1) {
-      // if this isn't the last station, add dwell time and another point for that
-      
-      if(currentStation === "mcar" && prevStation === "ashb" && line.stations.includes("lake")) {
-        // this is the orange line, delay it by 3 minutes
-        // (only valid southbound)
-        lineDuration += 3;
-      } else {
-        // everywhere else, assume 30s dwell time
-        lineDuration += .5;
-      }
-      
-      // station departure
-      waypoints.push({
-        milepoint: lineLength,
-        minute: lineDuration,
-      });
-    }
-    
-    prevStation = currentStation;
-  };
-  
   // x axis labels and grid lines
   const xAxisLength = chartRight - chartLeft;
   
   // pixels per kilometer
-  const xResolution = xAxisLength / lineLength;
+  const xResolution = xAxisLength / line.lineLength;
   // pixels per minute
   const yResolution = yAxisHeight / 120;
   
-  xAxisLabels.forEach(({ label, milepoint }) => {
+  // draw stringline
+  context.beginPath();
+  
+  context.strokeStyle = line.color;
+  context.lineWidth = 2;
+  
+  line.runs.forEach(waypoints => {
+    // convert waypoints to coordinates
+    const points = waypoints.map(({ milepoint, minute }) => {
+      // convert milepoint to x
+      const x = (milepoint * xResolution) + chartLeft;
+      
+      // convert minute to y
+      // time goes up, but the origin is top-left
+      const y = chartBottom - (minute * yResolution);
+      
+      return { x, y };
+    });
+    
+    const [firstPoint, ...otherPoints] = points;
+    
+    context.moveTo(firstPoint.x, firstPoint.y);
+    
+    otherPoints.forEach(({ x, y }) => {
+      context.lineTo(x, y);
+    });
+  });
+  
+  context.stroke();
+  context.closePath();
+  
+  // we draw the stringlines outside the chart area, so cover that with white
+  context.beginPath();
+  context.fillStyle = "#ffffff";  
+  context.fillRect(chartLeft - 1, 0, xAxisLength + 2, chartTop);
+  context.fillRect(chartLeft - 1, chartBottom, xAxisLength + 2, stringlineCanvasSize.height - chartBottom);
+  context.closePath();
+  
+  // draw x axis labels after we cover the chart overlap
+  line.stationAxisLabels.forEach(({ label, milepoint }) => {
     const xLoc = (milepoint * xResolution) + chartLeft;
         
     // draw label
     context.beginPath();
         
     context.lineWidth = 1;
+    context.fillStyle = "#000000";
     context.font = "12px sans-serif";
     context.textAlign = "start";
     
@@ -1217,36 +1311,6 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
     context.stroke();
     context.closePath();
   });
-  
-  // draw stringline
-  
-  // convert waypoints to coordinates
-  const points = waypoints.map(({ milepoint, minute }) => {
-    // convert milepoint to x
-    const x = (milepoint * xResolution) + chartLeft;
-    
-    // convert minute to y
-    // time goes up, but the origin is top-left
-    const y = chartBottom - (minute * yResolution);
-    
-    return { x, y };
-  });
-  
-  context.beginPath();
-  
-  context.strokeStyle = line.color;
-  context.lineWidth = 2;
-  
-  const [firstPoint, ...otherPoints] = points;
-  
-  context.moveTo(firstPoint.x, firstPoint.y);
-  
-  otherPoints.forEach(({ x, y }) => {
-    context.lineTo(x, y);
-  });
-  
-  context.stroke();
-  context.closePath();
   
   // draw axes
   // this is last so they show up on top
