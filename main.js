@@ -1,5 +1,8 @@
 const mapCanvasSize = { width: 700, height: 557 };
+
 const stringlineCanvasSize = { width: 1250, height: 650 };
+const stringlineYHours = 1;
+const yAxisInMinutes = stringlineYHours * 60;
 
 const waterColor = "#e4f1f7";
 const landColor = "#ffffff";
@@ -836,15 +839,15 @@ function precomputeStations() {
     // the lower bound is the earliest run that ends in the chart area
     //   • this is the run that starts after T-(lineDuration) minutes
     // the upper bound is the latest run that starts in the chart area
-    //   • this is the run that starts before T+120 minutes
+    //   • this is the run that starts before T+yAxisInMinutes minutes
         
     const runStarts = [];
     
     // TODO use other offset for reverse direction
     const baseOffset = line.offset[0];
     
-    // find the runs between T0 and T+120
-    for(let s = baseOffset; s < 120; s += line.headway) {
+    // find the runs between T0 and T+yAxisInMinutes
+    for(let s = baseOffset; s < yAxisInMinutes; s += line.headway) {
       runStarts.push(s);
     }
     // find the runs between T0 and T-(lineDuration)
@@ -1206,8 +1209,13 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
   
   // y axis labels and grid lines
   const yAxisHeight = chartBottom - chartTop;
-  ["×:00", "×:45", "×:30", "×:15", "×:00", "×:45", "×:30", "×:15", "×:00"].forEach((label, index) => {
-    const yLoc = ((index/8) * yAxisHeight) + chartTop;
+  const yAxisLabels = ["×:00"];
+  for(let i = 0; i < stringlineYHours; i++) {
+    ["×:45", "×:30", "×:15", "×:00"].forEach(label => yAxisLabels.push(label));
+  }
+  
+  yAxisLabels.forEach((label, index) => {
+    const yLoc = ((index/(yAxisLabels.length-1)) * yAxisHeight) + chartTop;
     
     // draw label
     context.beginPath();
@@ -1244,7 +1252,7 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
   // pixels per kilometer
   const xResolution = xAxisLength / line.lineLength;
   // pixels per minute
-  const yResolution = yAxisHeight / 120;
+  const yResolution = yAxisHeight / yAxisInMinutes;
   
   // draw stringline
   context.beginPath();
