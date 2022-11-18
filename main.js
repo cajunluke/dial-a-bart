@@ -160,19 +160,19 @@ const lines = [{
   offset: [5, 10],
   mcarDelay: false,
 }, {
-  name: "Blue",
-  color: "#01aced",
-  segments: ["M", "AL", "L"],
-  headway: 15,
-  offset: [5, 10],
-  mcarDelay: false,
-}, {
   name: "Orange",
   color: "#f8a51a",
   segments: ["R", "K", "AL", "A", "S"],
   headway: 15,
   offset: [5, 10],
   mcarDelay: true,
+}, {
+  name: "Blue",
+  color: "#01aced",
+  segments: ["M", "AL", "L"],
+  headway: 15,
+  offset: [5, 10],
+  mcarDelay: false,
 }, {
   name: "Beige",
   color: "#a8a280",
@@ -294,7 +294,7 @@ const stations = {
       { station: "12th", time: 2, distance: .661 },
       { station: "mcar", time: 4, distance: 2.41 },
     ],
-    location: { x: .401, y: .369 },
+    location: { x: .401, y: .368 },
     angle: 90,
   },
   ["24th"]: {
@@ -303,7 +303,7 @@ const stations = {
       { station: "16th", time: 2, distance: 1.46 },
       { station: "glen", time: 3, distance: 2.65 },
     ],
-    location: { x: .218, y: .593 },
+    location: { x: .218, y: .594 },
     angle: 90,
   },
   antc: {
@@ -320,7 +320,7 @@ const stations = {
       { station: "mcar", time: 6, distance: 2.80 },
       { station: "dbrk", time: 2, distance: 1.94 },
     ],
-    location: { x: .371, y: .281 },
+    location: { x: .374, y: .280 },
     angle: 135,
   },
   balb: {
@@ -339,7 +339,7 @@ const stations = {
       { station: "sanl", time: 4, distance: 4.12 },
       { station: "hayw", time: 4, distance: 4.60 },
     ],
-    location: { x: .520, y: .591 },
+    location: { x: .521, y: .594 },
     angle: 135,
   },
   bery: {
@@ -365,7 +365,7 @@ const stations = {
       { station: "powl", time: 2, distance: .749 },
       { station: "16th", time: 2, distance: 1.78 },
     ],
-    location: { x: .235, y: .518 },
+    location: { x: .232, y: .518 },
     angle: 45,
   },
   cols: {
@@ -384,7 +384,7 @@ const stations = {
       { station: "daly", time: 4, distance: 2.58 },
       { station: "ssan", time: 3, distance: 3.03 },
     ],
-    location: { x: .257, y: .729 },
+    location: { x: .253, y: .732 },
     angle: 135,
   },
   conc: {
@@ -393,7 +393,7 @@ const stations = {
       { station: "ncon", time: 3, distance: 3.61 },
       { station: "phil", time: 5, distance: 6.52 },
     ],
-    location: { x: .542, y: .145 },
+    location: { x: .538, y: .144 },
     angle: 45,
   },
   daly: {
@@ -402,7 +402,7 @@ const stations = {
       { station: "balb", time: 4, distance: 2.88 },
       { station: "colm", time: 4, distance: 2.58 },
     ],
-    location: { x: .235, y: .701 },
+    location: { x: .230, y: .703 },
     angle: 135,
   },
   dbrk: {
@@ -428,7 +428,7 @@ const stations = {
       { station: "rich", time: 7, distance: 3.72 },
       { station: "plza", time: 3, distance: 2.96 },
     ],
-    location: { x: .288, y: .171 },
+    location: { x: .287, y: .171 },
     angle: 135,
   },
   plza: {
@@ -455,7 +455,7 @@ const stations = {
       { station: "ucty", time: 5, distance: 5.16 },
       { station: "warm", time: 6, distance: 7.49 },
     ],
-    location: { x: .665, y: .771 },
+    location: { x: .662, y: .771 },
     angle: 135,
   },
   ftvl: {
@@ -473,7 +473,7 @@ const stations = {
       { station: "24th", time: 3, distance: 2.65 },
       { station: "balb", time: 3, distance: 1.83 },
     ],
-    location: { x: .218, y: .622 },
+    location: { x: .218, y: .623 },
     angle: 90,
   },
   hayw: {
@@ -482,7 +482,7 @@ const stations = {
       { station: "bayf", time: 4, distance: 4.60 },
       { station: "shay", time: 4, distance: 4.74 },
     ],
-    location: { x: .565, y: .647 },
+    location: { x: .565, y: .648 },
     angle: 135,
   },
   lafy: {
@@ -491,7 +491,7 @@ const stations = {
       { station: "orin", time: 4, distance: 6.05 },
       { station: "wcrk", time: 5, distance: 5.56 },
     ],
-    location: { x: .474, y: .224 },
+    location: { x: .477, y: .221 },
     angle: 45,
   },
   lake: {
@@ -501,7 +501,7 @@ const stations = {
       { station: "woak", time: 5, distance: 2.94 },
       { station: "ftvl", time: 4, distance: 4.40 },
     ],
-    location: { x: .425, y: .472 },
+    location: { x: .424, y: .472 },
     angle: 135,
   },
   mcar: {
@@ -520,7 +520,7 @@ const stations = {
       { station: "sbrn", time: 4, distance: 4.93 },
       { station: "sfia", time: 5, distance: 2.70 },
     ],
-    location: { x: .327, y: .822 },
+    location: { x: .328, y: .827 },
     angle: 0,
   },
   mlpt: {
@@ -529,7 +529,7 @@ const stations = {
       { station: "warm", time: 8, distance: 11.10 },
       { station: "bery", time: 4, distance: 4.86 },
     ],
-    location: { x: .689, y: .870 },
+    location: { x: .689, y: .871 },
     angle: 90,
   },
   mont: {
@@ -538,7 +538,7 @@ const stations = {
       { station: "embr", time: 2, distance: .547 },
       { station: "powl", time: 2, distance: .804 },
     ],
-    location: { x: .266, y: .478 },
+    location: { x: .264, y: .477 },
     angle: 45,
   },
   nbrk: {
@@ -547,7 +547,7 @@ const stations = {
       { station: "dbrk", time: 2, distance: 1.68 },
       { station: "plza", time: 3, distance: 3.56 },
     ],
-    location: { x: .332, y: .225 },
+    location: { x: .332, y: .226 },
     angle: 135,
   },
   ncon: {
@@ -573,7 +573,7 @@ const stations = {
       { station: "rock", time: 6, distance: 7.07 },
       { station: "lafy", time: 4, distance: 6.05 },
     ],
-    location: { x: .455, y: .249 },
+    location: { x: .457, y: .246 },
     angle: 45,
   },
   pitt: {
@@ -600,7 +600,7 @@ const stations = {
       { station: "conc", time: 5, distance: 6.52 },
       { station: "wcrk", time: 3, distance: 2.77 },
     ],
-    location: { x: .518, y: .171 },
+    location: { x: .517, y: .171 },
     angle: 45,
   },
   powl: {
@@ -609,7 +609,7 @@ const stations = {
       { station: "mont", time: 2, distance: .804 },
       { station: "civc", time: 1, distance: .749 },
     ],
-    location: { x: .250, y: .496 },
+    location: { x: .249, y: .497 },
     angle: 45,
   },
   rich: {
@@ -617,7 +617,7 @@ const stations = {
     links: [
       { station: "deln", time: 4, distance: 3.72 },
     ],
-    location: { x: .269, y: .142 },
+    location: { x: .266, y: .143 },
     angle: 135,
   },
   rock: {
@@ -654,7 +654,7 @@ const stations = {
       { station: "bayf", time: 4, distance: 4.12 },
       { station: "cols", time: 4, distance: 4.76 },
     ],
-    location: { x: .496, y: .561 },
+    location: { x: .497, y: .563 },
     angle: 135,
   },
   shay: {
@@ -663,7 +663,7 @@ const stations = {
       { station: "hayw", time: 4, distance: 4.74 },
       { station: "ucty", time: 5, distance: 6.04 },
     ],
-    location: { x: .598, y: .689 },
+    location: { x: .596, y: .688 },
     angle: 135,
   },
   ssan: {
@@ -672,7 +672,7 @@ const stations = {
       { station: "sbrn", time: 3, distance: 3.92 },
       { station: "colm", time: 3, distance: 3.03 },
     ],
-    location: { x: .279, y: .755 },
+    location: { x: .274, y: .759 },
     angle: 135,
   },
   ucty: {
@@ -681,7 +681,7 @@ const stations = {
       { station: "shay", time: 5, distance: 6.04 },
       { station: "frmt", time: 5, distance: 5.16 },
     ],
-    location: { x: .631, y: .729 },
+    location: { x: .629, y: .729 },
     angle: 135,
   },
   wcrk: {
