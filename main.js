@@ -988,7 +988,10 @@ const drawLines = (context, lines, state) => {
       
       if(visitingLines === 1) {
         // one line visiting means no offset needed
-        return point;
+        return {
+          angle,
+          ...point,
+        };
       }
       
       // get and increment visitedLines for this station
@@ -1005,17 +1008,38 @@ const drawLines = (context, lines, state) => {
       const yOffset = offset * Math.cos(angle / 180 * Math.PI);
       
       return {
+        angle,
         x: point.x + xOffset,
         y: point.y + yOffset,
       };
     });
-    
-    const [startPoint, ...otherPoints] = points;
-    context.moveTo(startPoint.x, startPoint.y);
-    
-    otherPoints.forEach(({x, y}) => {
+        
+    for(let i=0; i < points.length; i++) {
+      const { angle, x, y } = points[i];
+      
+      if(i === 0) {
+        // first point is a moveTo
+        context.moveTo(x, y);
+        
+        // continue to next point
+        continue;
+      }
+      
+      // for non-first points, we want to check against the previous point
+      const prevPoint = points[i-1];
+      
+      // first check the angle
+      if(angle === prevPoint.angle) {
+        // if the angles are the same, just draw the line
+        context.lineTo(x, y);
+        
+        // and go to next point
+        continue;
+      }
+      
+      // draw line for now
       context.lineTo(x, y);
-    });
+    }
     
     context.stroke();
     context.closePath();
