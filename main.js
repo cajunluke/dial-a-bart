@@ -76,36 +76,42 @@ const lines = [{
   segments: ["C", "E", "K", "M", "W", "Y"],
   headway: 15,
   offset: [3, 10],
+  mcarDelay: false,
 }, {
   name: "Red",
   color: "#ec1c23",
   segments: ["R", "K", "M", "W"],
   headway: 15,
   offset: [5, 10],
+  mcarDelay: false,
 }, {
   name: "Green",
   color: "#4db947",
   segments: ["M", "AL", "A", "S"],
   headway: 15,
   offset: [5, 10],
+  mcarDelay: false,
 }, {
   name: "Blue",
   color: "#01aced",
   segments: ["M", "AL", "L"],
   headway: 15,
   offset: [5, 10],
+  mcarDelay: false,
 }, {
   name: "Orange",
   color: "#f8a51a",
   segments: ["R", "K", "AL", "A", "S"],
   headway: 15,
   offset: [5, 10],
+  mcarDelay: true,
 }, {
   name: "Beige",
   color: "#a8a280",
   segments: ["H"],
   headway: 9,
   offset: [0, 0],
+  mcarDelay: false,
 }];
 
 const landforms = [{
@@ -228,8 +234,7 @@ const stations = {
   ashb: {
     name: "Ashby",
     links: [
-      // orange line ashb -> mcar is 6 mins, probably for extra dwell time
-      { station: "mcar", time: 3, distance: 2.80 },
+      { station: "mcar", time: 6, distance: 2.80 },
       { station: "dbrk", time: 2, distance: 1.94 },
     ],
     location: { x: .371, y: .281 },
@@ -536,7 +541,7 @@ const stations = {
     name: "Rockridge",
     links: [
       { station: "orin", time: 6, distance: 7.07 },
-      { station: "mcar", time: 2, distance: 2.53 },
+      { station: "mcar", time: 5, distance: 2.53 },
     ],
     location: { x: .432, y: .279 },
     angle: 45,
@@ -801,32 +806,33 @@ function precomputeStations() {
         milepoint: lineLength,
       });
       
-      // station arrival
+      // station arrival (for non-terminal stations)
+      if(i < line.stations.length - 1) {
+        // if this isn't the last station, subtract dwell time and add another point for that
+        
+        let dwell = .5;
+        if(prevStation !== "19th" && currentStation === "mcar" && line.mcarDelay) {
+          // this is the orange line, delay it by 3 minutes
+          // (only valid southbound)
+          
+          // K line fourth bore _when_
+          dwell = 3;
+        }
+      
+        waypoints.push({
+          station: currentStation,
+          milepoint: lineLength,
+          minute: lineDuration - dwell,
+        });
+      }
+      
+      // station departure (on schedule)
+      // (or arrival for terminal stations)
       waypoints.push({
         station: currentStation,
         milepoint: lineLength,
         minute: lineDuration,
       });
-      
-      if(i < line.stations.length - 1) {
-        // if this isn't the last station, add dwell time and another point for that
-        
-        if(currentStation === "mcar" && prevStation === "ashb" && line.stations.includes("lake")) {
-          // this is the orange line, delay it by 3 minutes
-          // (only valid southbound)
-          lineDuration += 3;
-        } else {
-          // everywhere else, assume 30s dwell time
-          lineDuration += .5;
-        }
-        
-        // station departure
-        waypoints.push({
-          station: currentStation,
-          milepoint: lineLength,
-          minute: lineDuration,
-        });
-      }
       
       prevStation = currentStation;
     }
