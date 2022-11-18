@@ -1234,7 +1234,7 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
     const textSize = context.measureText(label);
     const yOffset = Math.round(textSize.actualBoundingBoxAscent/2);
     
-    context.fillText(label, chartLeft - 5, yLoc + yOffset);
+    context.fillText(label, Math.round(chartLeft - 5), Math.round(yLoc + yOffset));
     
     context.stroke();
     context.closePath();
