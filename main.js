@@ -1,98 +1,188 @@
 const mapCanvasSize = { width: 700, height: 557 };
+
 const stringlineCanvasSize = { width: 1250, height: 650 };
+const stringlineYHours = 1;
+const yAxisInMinutes = stringlineYHours * 60;
 
 const waterColor = "#e4f1f7";
 const landColor = "#ffffff";
 
+/**
+ * The standard (2022-current) configuration of BART's revenue track segments
+ * 
+ * This is an object; the keys are the segment code used for this application.
+ * (These codes are loosely based on the BART control radio talkgroups.)
+ * The values are objects with these keys:
+ * • `name`: string
+ *      The segment's display name
+ * • `stations`: array of strings
+ *      A list of the stations found on this segment (order is not actually relevant)
+ * • `connections`: object { [name]: string }
+ *      The other segments this segment connects to, with segment code as keys
+ *      and connecting station as values.
+ *
+ * Note that the H line is the automated guideway airtrain, and is largely 
+ * ancillary to the system as a whole; it is included here for completeness.
+ */
 const segments = {
   AL: {
+    // These stations are all A line stations, but I split them off for convenience
     name: "Alameda/Livermore Interline",
     stations: ["lake", "ftvl", "cols", "sanl", "bayf"],
     connections: { K: "12th", M: "woak", A: "hayw", L: "cast" },
   },
   A: {
+    // The original BART segment (opened 11 Sept 1972 frmt - mcar)
+    // I assume A stands for Alameda
     name: "Alameda Line",
     stations: ["hayw", "shay", "ucty", "frmt"],
     connections: { AL: "bayf", S: "warm" },
   },
   C: {
+    // Originally terminated at Concord and subsequently extended
     name: "Concord Line",
     stations: ["pitt", "ncon", "conc", "phil", "wcrk", "lafy", "orin", "rock"],
     connections: { K: "mcar", E: "pctr" },
   },
   K: {
+    // It's the K line because it points in four directions like the capital letter K
     name: "Downtown Oakland Line (Oakland Wye)",
     stations: ["mcar", "19th", "12th"],
     connections: { R: "ashb", C: "rock", M: "woak", AL: "lake" },
   },
   L: {
+    // Doesn't actually go to Livermore
+    // freeway stations suck, downtown Livermore or bust
     name: "Livermore Line",
     stations: ["cast", "wdub", "dubl"],
     connections: { AL: "bayf" },
   },
   M: {
+    // This name is pretty clear; this is currently the core of the system
     name: "Market/Mission Line",
     stations: ["woak", "embr", "mont", "powl", "civc", "16th", "24th", "glen", "balb", "daly"],
     connections: { K: "12th", AL: "lake", W: "colm" },
   },
   R: {
+    // The only outer leg to never be extended, sorry Hercules :(
+    // (not that sorry, you get WestCAT)
     name: "Richmond Line",
     stations: ["rich", "deln", "plza", "nbrk", "dbrk", "ashb"],
     connections: { K: "mcar" },
   },
   S: {
+    // Built by BART to the Santa Clara county line and VTA thereafter
+    // mlpt is a ridiculously pretty station
     name: "South Alameda/Santa Clara Line",
     stations: ["warm", "mlpt", "bery"],
     connections: { A: "frmt" },
   },
   W: {
+    // I assume W is just M upside down?
     name: "San Mateo Line",
     stations: ["colm", "ssan", "sbrn", "mlbr"],
     connections: { M: "daly" },
   },
   Y: {
+    // Y didn't they just extend the SFO airtrain to mlbr?
     name: "SFO Line",
     stations: ["sfia"],
     connections: { W: "sbrn", W: "mlbr" },
   },
   E: {
+    // BART pretends this is a C line extension to not scare people from Brentwood
+    // There's actually a secret transfer station from standard-gauge to BART gauge near pitt
+    // but they don't publish times for that, and I haven't bothered to go wander out there
+    // with a stopwatch
     name: "eBART Line",
     stations: ["antc", "pctr"],
     connections: { C: "pitt" },
   },
   H: {
-    // not a mainline bart line, so it gets special handling
+    // H for Hegenberger, the street it runs along to the airport
+    // Save $3.50 and take the 73 bus and ride this for free from oakl
     name: "OAK Airtrain",
     stations: ["oakl", "cols"],
   },
 };
 
+/**
+ * The standard (2022-current) configuration of BART's revenue lines.
+ * 
+ * Each element of this array is an object with the following elements.
+ * The first set of elements are statically configured:
+ * • `name`: string
+ *      The line's display name
+ * • `color`: string
+ *      The color used to draw and identify the line
+ * • `segments`: array of strings
+ *      The BART track segments this line operates on
+ * • `headway`: number
+ *      The line departs from its terminal every "headway" minutes
+ * • `offset`: array of numbers
+ *      The number of minutes past the hour the first line departs the terminals
+ *      (The first element is the "normal" line direction, the second is the reverse run)
+ * • `mcarDelay`: boolean
+ *      Whether this line has to wait at mcar for the K line southbound tunnel to clear
+ * 
+ * These other elements are computed based on the first set:
+ * • `stations`: array of strings
+ *      The stations this line runs through in the "normal" direction
+ * • `stationAxisLabels`: array of { label: string, milepoint: number }
+ *      The x axis station names and their distance along the line
+ * • `runs`: array of arrays of { station: string, milepoint: number, minute: number }
+ *      A set of line runs to be charted; each inner array is a single run containing
+ *      a set of points containing the station name, line distance, and total run duration so far
+ * • `lineLength`: number
+ *      Precomputed full line length in kilometers
+ * • `lineDuration`: number
+ *      Precomputed full line runtime in minutes
+ */
 const lines = [{
   name: "Yellow",
   color: "#ffe802",
   segments: ["C", "E", "K", "M", "W", "Y"],
+  headway: 15,
+  offset: [3, 10],
+  mcarDelay: false,
 }, {
   name: "Red",
   color: "#ec1c23",
   segments: ["R", "K", "M", "W"],
+  headway: 15,
+  offset: [5, 10],
+  mcarDelay: false,
 }, {
   name: "Green",
   color: "#4db947",
   segments: ["M", "AL", "A", "S"],
+  headway: 15,
+  offset: [5, 10],
+  mcarDelay: false,
 }, {
   name: "Blue",
   color: "#01aced",
   segments: ["M", "AL", "L"],
+  headway: 15,
+  offset: [5, 10],
+  mcarDelay: false,
 }, {
   name: "Orange",
   color: "#f8a51a",
   segments: ["R", "K", "AL", "A", "S"],
+  headway: 15,
+  offset: [5, 10],
+  mcarDelay: true,
 }, {
   name: "Beige",
   color: "#a8a280",
   segments: ["H"],
+  headway: 9,
+  offset: [0, 0],
+  mcarDelay: false,
 }];
 
+/** points and colors describing regions of the map to be drawn */
 const landforms = [{
   name: "bay area",
   color: waterColor,
@@ -162,7 +252,21 @@ const landforms = [{
 }];
 
 /**
- * time is in minutes; distance is in kilometers
+ * The (2022-current) list of BART's stations
+ * 
+ * This is an object; the keys are the station codes used by BART and extensively in this application.
+ * The values are objects with these keys:
+ * • `name`: string
+ *      The station's full display name
+ * • `links`: array of { station: string, time: number, distance: number }
+ *      The other stations this station is linked to:
+ *      ⁃ `station`: the code of the other station
+ *      ⁃ `time`: the time it takes to travel from this station to that station in minutes
+ *      ⁃ `distance`: the distance from this station to that station in km (measured on Google Maps Nov 2022)
+ * • `location`: object { x: number, y: number }
+ *      The location of the station on the map (measured off the official BART map Nov 2022)
+ * • `angle`: number
+ *      The angle the line to the station name should be at; this also affects the track line adjacency
  */
 const stations = {
   ["12th"]: {
@@ -213,8 +317,7 @@ const stations = {
   ashb: {
     name: "Ashby",
     links: [
-      // orange line ashb -> mcar is 6 mins, probably for extra dwell time
-      { station: "mcar", time: 3, distance: 2.80 },
+      { station: "mcar", time: 6, distance: 2.80 },
       { station: "dbrk", time: 2, distance: 1.94 },
     ],
     location: { x: .371, y: .281 },
@@ -521,7 +624,7 @@ const stations = {
     name: "Rockridge",
     links: [
       { station: "orin", time: 6, distance: 7.07 },
-      { station: "mcar", time: 2, distance: 2.53 },
+      { station: "mcar", time: 5, distance: 2.53 },
     ],
     location: { x: .432, y: .279 },
     angle: 45,
@@ -712,6 +815,10 @@ function precomputeStations() {
       });
     });
     
+    if(endpoint === undefined) {
+      throw `A line endpoint was not found for ${line.name}! You may have tried to declare a short-turn line.`;
+    }
+    
     // our output data structure
     line.stations = [];
     
@@ -736,6 +843,115 @@ function precomputeStations() {
       // and remove it from the nodes collection
       delete nodes[nextStation];
     }
+    
+    // normalize line direction
+    const firstStation = line.stations[0];
+    if(firstStation === "dubl" || firstStation === "bery") {
+      // blue and green should start at daly even if they don't want to
+      line.stations.reverse();
+    }
+    
+    // compute runs based on stations, headway, and duration
+    
+    line.stationAxisLabels = [];
+    const waypoints = [];
+    
+    let lineLength = 0;
+    let lineDuration = 0;
+    
+    let prevStation = line.stations[0];
+    
+    // start at origin
+    waypoints.push({
+      station: prevStation,
+      milepoint: 0,
+      minute: 0,
+    });
+    
+    line.stationAxisLabels.push({
+      label: prevStation,
+      milepoint: 0,
+    });
+    
+    for(let i = 1; i < line.stations.length; i++) {
+      const currentStation = line.stations[i];
+      
+      const { links } = stations[prevStation];
+      
+      // get the link from the previous station to the current station
+      const [{ time, distance }, ] = links.filter(({ station }) => station === currentStation);
+      
+      lineLength += distance;
+      lineDuration += time;
+      
+      line.stationAxisLabels.push({
+        label: currentStation,
+        milepoint: lineLength,
+      });
+      
+      // station arrival (for non-terminal stations)
+      if(i < line.stations.length - 1) {
+        // if this isn't the last station, subtract dwell time and add another point for that
+        
+        let dwell = .5;
+        if(prevStation !== "19th" && currentStation === "mcar" && line.mcarDelay) {
+          // this is the orange line, delay it by 3 minutes
+          // (only valid southbound)
+          
+          // K line fourth bore _when_
+          dwell = 3;
+        }
+      
+        waypoints.push({
+          station: currentStation,
+          milepoint: lineLength,
+          minute: lineDuration - dwell,
+        });
+      }
+      
+      // station departure (on schedule)
+      // (or arrival for terminal stations)
+      waypoints.push({
+        station: currentStation,
+        milepoint: lineLength,
+        minute: lineDuration,
+      });
+      
+      prevStation = currentStation;
+    }
+    
+    // stick computed length and duration in line data
+    line.lineLength = lineLength;
+    line.lineDuration = lineDuration;
+    
+    // find all the runs that show at all in the chart area
+    // the lower bound is the earliest run that ends in the chart area
+    //   • this is the run that starts after T-(lineDuration) minutes
+    // the upper bound is the latest run that starts in the chart area
+    //   • this is the run that starts before T+yAxisInMinutes minutes
+        
+    const runStarts = [];
+    
+    // TODO use other offset for reverse direction
+    const baseOffset = line.offset[0];
+    
+    // find the runs between T0 and T+yAxisInMinutes
+    for(let s = baseOffset; s < yAxisInMinutes; s += line.headway) {
+      runStarts.push(s);
+    }
+    // find the runs between T0 and T-(lineDuration)
+    for(let s = baseOffset - line.headway; s > -lineDuration; s -= line.headway) {
+      runStarts.push(s);
+    }
+    
+    // for neatness, keep them in order
+    runStarts.sort((a, b) => a - b);
+    
+    line.runs = runStarts.map(startPoint => {
+      return waypoints.map(({ station, milepoint, minute }) => {
+        return { station, milepoint, minute: minute + startPoint };
+      });
+    });
   });
   
   lines.forEach(line => {
@@ -1068,10 +1284,10 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
   console.table(terminals);
   
   const header = stringlineHeader.querySelectorAll("#lineID")[0];
-  header.innerText = `${line.name} Line  (${terminals})`;
+  header.innerText = `${line.name} Line   (${terminals})`;
   stringlineHeader.style = `background: ${line.color}50;`;
   
-  const minorGridColor = "#00000066";
+  const minorGridColor = "#00000033";
   
   stringline.style = "";
   
@@ -1082,8 +1298,13 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
   
   // y axis labels and grid lines
   const yAxisHeight = chartBottom - chartTop;
-  ["×:00", "×:45", "×:30", "×:15", "×:00", "×:45", "×:30", "×:15", "×:00"].forEach((label, index) => {
-    const yLoc = ((index/8) * yAxisHeight) + chartTop;
+  const yAxisLabels = ["×:00"];
+  for(let i = 0; i < stringlineYHours; i++) {
+    ["×:45", "×:30", "×:15", "×:00"].forEach(label => yAxisLabels.push(label));
+  }
+  
+  yAxisLabels.forEach((label, index) => {
+    const yLoc = ((index/(yAxisLabels.length-1)) * yAxisHeight) + chartTop;
     
     // draw label
     context.beginPath();
@@ -1096,7 +1317,7 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
     const textSize = context.measureText(label);
     const yOffset = Math.round(textSize.actualBoundingBoxAscent/2);
     
-    context.fillText(label, chartLeft - 5, yLoc + yOffset);
+    context.fillText(label, Math.round(chartLeft - 5), Math.round(yLoc + yOffset));
     
     context.stroke();
     context.closePath();
@@ -1114,74 +1335,61 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
     context.closePath();
   });
   
-  let lineLength = 0;
-  let lineDuration = 0;
-  
-  const xAxisLabels = [];
-  const waypoints = [];
-  
-  let prevStation = line.stations[0];
-  
-  // start at origin
-  waypoints.push({ milepoint: 0, minute: 0 });
-  
-  xAxisLabels.push({
-    label: prevStation,
-    milepoint: 0,
-  });
-  
-  for(let i = 1; i < line.stations.length; i++) {
-    const currentStation = line.stations[i];
-    
-    const { links } = stations[currentStation];
-    
-    const [{ time, distance }, ] = links.filter(({ station }) => station === prevStation);
-    
-    lineLength += distance;
-    lineDuration += time;
-    
-    xAxisLabels.push({
-      label: currentStation,
-      milepoint: lineLength,
-    });
-    
-    // station arrival
-    waypoints.push({
-      milepoint: lineLength,
-      minute: lineDuration,
-    });
-    
-    if(i === line.stations.length - 1) {
-      // if this isn't the last station, add dwell time and another point for that
-      
-      // assume 30s dwell time
-      lineDuration += .5;
-      
-      // station departure
-      waypoints.push({
-        milepoint: lineLength,
-        minute: lineDuration,
-      });
-    }
-    
-    prevStation = currentStation;
-  };
-  
   // x axis labels and grid lines
   const xAxisLength = chartRight - chartLeft;
   
   // pixels per kilometer
-  const xResolution = xAxisLength / lineLength;
+  const xResolution = xAxisLength / line.lineLength;
   // pixels per minute
-  const yResolution = yAxisHeight / 120;
+  const yResolution = yAxisHeight / yAxisInMinutes;
   
-  xAxisLabels.forEach(({ label, milepoint }) => {
+  // draw stringline
+  context.beginPath();
+  
+  context.strokeStyle = line.color;
+  context.lineWidth = 2;
+  
+  line.runs.forEach(waypoints => {
+    // convert waypoints to coordinates
+    const points = waypoints.map(({ milepoint, minute }) => {
+      // convert milepoint to x
+      const x = (milepoint * xResolution) + chartLeft;
+      
+      // convert minute to y
+      // time goes up, but the origin is top-left
+      const y = chartBottom - (minute * yResolution);
+      
+      return { x, y };
+    });
+    
+    const [firstPoint, ...otherPoints] = points;
+    
+    context.moveTo(firstPoint.x, firstPoint.y);
+    
+    otherPoints.forEach(({ x, y }) => {
+      context.lineTo(x, y);
+    });
+  });
+  
+  context.stroke();
+  context.closePath();
+  
+  // we draw the stringlines outside the chart area, so cover that with white
+  context.beginPath();
+  context.fillStyle = "#ffffff";  
+  context.fillRect(chartLeft - 1, 0, xAxisLength + 2, chartTop);
+  context.fillRect(chartLeft - 1, chartBottom, xAxisLength + 2, stringlineCanvasSize.height - chartBottom);
+  context.closePath();
+  
+  // draw x axis labels after we cover the chart overlap
+  line.stationAxisLabels.forEach(({ label, milepoint }) => {
     const xLoc = (milepoint * xResolution) + chartLeft;
         
     // draw label
     context.beginPath();
         
     context.lineWidth = 1;
+    context.fillStyle = "#000000";
     context.font = "12px sans-serif";
     context.textAlign = "start";
     
@@ -1207,36 +1415,6 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
     context.stroke();
     context.closePath();
   });
-  
-  // draw stringline
-  
-  // convert waypoints to coordinates
-  const points = waypoints.map(({ milepoint, minute }) => {
-    // convert milepoint to x
-    const x = (milepoint * xResolution) + chartLeft;
-    
-    // convert minute to y
-    // time goes up, but the origin is top-left
-    const y = chartBottom - (minute * yResolution);
-    
-    return { x, y };
-  });
-  
-  context.beginPath();
-  
-  context.strokeStyle = line.color;
-  context.lineWidth = 2;
-  
-  const [firstPoint, ...otherPoints] = points;
-  
-  context.moveTo(firstPoint.x, firstPoint.y);
-  
-  otherPoints.forEach(({ x, y }) => {
-    context.lineTo(x, y);
-  });
-  
-  context.stroke();
-  context.closePath();
   
   // draw axes
   // this is last so they show up on top
