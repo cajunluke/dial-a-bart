@@ -970,6 +970,23 @@ const convertPoint = ({ x, y }) => {
   };
 };
 
+const getTangent = degrees => {
+  // for horizontal and vertical cases, we want a convenient, round number to check against
+  switch(degrees) {
+    case 0:
+    case 180:
+      // horizontal
+      return 0;
+    case 90:
+    case 270:
+      // vertical
+      return Infinity;
+    default:
+      // otherwise, just use normal math
+      return -Math.tan(degrees * Math.PI/180);
+  }
+};
+
 const drawLines = (context, lines, state) => {
   // map<string, int> counting lines currently visited
   const visitedLines = {};
@@ -1037,8 +1054,79 @@ const drawLines = (context, lines, state) => {
         continue;
       }
       
-      // draw line for now
-      context.lineTo(x, y);
+      // if the angles are not the same, draw a nice curve between the lines
+      const tangent = getTangent(angle);
+      const prevTangent = getTangent(prevPoint.angle);
+            
+      // compute the intersection point of the lines
+      let iy,ix;
+      if(tangent === 0 || tangent === Infinity) {
+        // current is horizontal or vertical
+        if(prevTangent === 0 || prevTangent === Infinity) {
+          // both are horiz/vert (but not the same)
+          
+          if(tangent === 0) {
+            // was vert, is horiz
+            iy = y;
+            ix = prevPoint.x;
+          } else {
+            // was horiz, is vert
+            iy = prevPoint.y;
+            ix = x;
+          }
+        } else {
+          // was slopey, is horiz/vert
+          
+          if(tangent === 0) {
+            // was slopey, is horiz
+            iy = y;
+            ix = (y - prevPoint.y)/prevTangent + prevPoint.x;
+          } else {
+            // was slopey, is vert
+            iy = prevTangent * (x - prevPoint.x) + prevPoint.y;
+            ix = x;
+          }
+        }
+      } else if (prevTangent === 0 || prevTangent === Infinity) {
+        // previous is horizontal or vertical, current is slopey
+        
+        if(prevTangent === 0) {
+          // was horiz, is slopey
+          iy = prevPoint.y;
+          ix = (prevPoint.y - y)/tangent + x;
+        } else {
+          // was vert, is slopey
+          iy = tangent * (prevPoint.x - x) + y;
+          ix = prevPoint.x;
+        }
+      } else {
+        // both are slopey
+        
+        // y - y0 = m0 * (x - x0)
+        const y0 = y;
+        const x0 = x;
+        const m0 = tangent;
+        
+        // y - y1 = m1 * (x - x1)
+        const y1 = prevPoint.y;
+        const x1 = prevPoint.x;
+        const m1 = prevTangent;
+        
+        // two slope-intercept equations artisanally solved simultaneously for your pleasure
+        ix = (m1*x1 - m0*x0 + y0 - y1) / (m1 - m0);
+        iy = (x0 - x1 + y1/m1 - y0/m0) * (m0 * m1) / (m0 - m1);
+      }
+      
+      // a cubic Bézier can model a quadratic Bézier by setting both control points
+      // two-thirds of the way between the endpoint and the quadratic's single point
+      
+      // 2/3rd of the way between previous and intercept
+      const cp1 = { x: (ix + ix + prevPoint.x)/3, y: (iy + iy + prevPoint.y)/3, };
+      // 2/3rd of the way between current and intercept
+      const cp2 = { x: (ix + ix + x)/3, y: (iy + iy + y)/3, };
+      
+      // Cubic Bézier curve
+      context.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, x, y);
     }
     
     context.stroke();
