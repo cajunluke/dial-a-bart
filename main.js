@@ -414,7 +414,9 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
 };
 
 const drawStringline = (timings, stringlineHeader, stringline, state) => {
-  if(state.editingLine === undefined) {
+  const currentLineIndex = state.editingLine;
+  
+  if(currentLineIndex === undefined) {
     timings.style = "display: none;";
     
     return;
@@ -426,7 +428,7 @@ const drawStringline = (timings, stringlineHeader, stringline, state) => {
   
   context.clearRect(0, 0, stringlineCanvasSize.width, stringlineCanvasSize.height);
   
-  const line = lines[state.editingLine];
+  const line = lines[currentLineIndex];
     
   const terminals = [line.stations.at(0), line.stations.at(-1)]
     .map(station => stations[station])
@@ -496,11 +498,71 @@ const drawStringline = (timings, stringlineHeader, stringline, state) => {
   // pixels per minute
   const yResolution = yAxisHeight / yAxisInMinutes;
   
-  // draw stringline
+  const visitedStationsByOtherLineIndex = [];
+  for(let i = 0; i < lines.length; i++) {
+    // pre-fill array with objects
+    visitedStationsByOtherLineIndex.push({});
+  }
+  
+  line.runs[0].forEach(({ station, milepoint }) => {
+    stations[station].lines.forEach(lineIndex => {
+      if(lineIndex !== currentLineIndex) {
+        visitedStationsByOtherLineIndex[lineIndex][station] = milepoint;
+      }
+    });
+  });
+  
+  visitedStationsByOtherLineIndex.forEach((otherStations, lineIndex) => {
+    if(Object.keys(otherStations).length === 0) {
+      // no stations to draw, skip
+      return;
+    }
+    
+    // draw other line's stringline
+    const otherLine = lines[lineIndex];
+    
+    context.beginPath();
+    
+    context.strokeStyle = otherLine.color;
+    context.lineWidth = 2;
+    
+    otherLine.runs.forEach(waypoints => {
+      // draw only waypoints that are on the same segment as the edited line
+      const cowaypoints = waypoints.filter(({ station }) => otherStations.hasOwnProperty(station));
+      
+      // convert waypoints to coordinates
+      const points = cowaypoints.map(({ station, minute }) => {
+        // use editing line's milepoints
+        const milepoint = otherStations[station];
+        
+        // convert milepoint to x
+        const x = (milepoint * xResolution) + chartLeft;
+        
+        // convert minute to y
+        // time goes up, but the origin is top-left
+        const y = chartBottom - (minute * yResolution);
+        
+        return { x, y };
+      });
+      
+      const [firstPoint, ...otherPoints] = points;
+      
+      context.moveTo(firstPoint.x, firstPoint.y);
+      
+      otherPoints.forEach(({ x, y }) => {
+        context.lineTo(x, y);
+      });
+    });
+    
+    context.stroke();
+    context.closePath();
+  });
+  
+  // draw primary line's stringline
   context.beginPath();
   
   context.strokeStyle = line.color;
-  context.lineWidth = 2;
+  context.lineWidth = 4;
   
   line.runs.forEach(waypoints => {
     // convert waypoints to coordinates
