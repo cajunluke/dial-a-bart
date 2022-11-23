@@ -2,7 +2,7 @@
  * The (2022-current) list of BART's stations
  * 
  * This is an object; the keys are the station codes used by BART and extensively in this application.
- * The values are objects with these keys:
+ * The values are objects with these statically configured attributes:
  * • `name`: string
  *      The station's full display name
  * • `links`: array of { station: string, time: number, distance: number }
@@ -14,6 +14,10 @@
  *      The location of the station on the map (measured off the official BART map Nov 2022)
  * • `angle`: number
  *      The angle the line to the station name should be at; this also affects the track line adjacency
+ *
+ * These other attributes are computed based on the lines that visit these stations:
+ * • `lines`: array of numbers
+ •      Each number is the index of a line that visits this station
  */
 const stations = {
   ["12th"]: {

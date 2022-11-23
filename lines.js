@@ -354,11 +354,17 @@ function precomputeStations() {
     });
   });
   
-  lines.forEach(line => {
+  Object.values(stations).forEach(station => {
+    station.lines = [];
+  });
+  
+  lines.forEach((line, index) => {
     line.stations.forEach(station => {
       const { visitingLines = 0 } = stations[station];
       
-      stations[station].visitingLines = visitingLines + 1;
+      const visitedStation = stations[station];
+      visitedStation.visitingLines = visitingLines + 1;
+      visitedStation.lines.push(index);
     });
   });
 }
