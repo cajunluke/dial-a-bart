@@ -645,8 +645,8 @@ const stations = {
       { station: "mlbr", time: 4, distance: 2.70 },
       { station: "sbrn", time: 4, distance: 3.55 },
     ],
-    location: { x: .362, y: .798 },
-    angle: 90,
+    location: { x: .364, y: .792 },
+    angle: 180,
   },
   sanl: {
     name: "San Leandro",
