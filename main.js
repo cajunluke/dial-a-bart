@@ -413,7 +413,7 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
   });
 };
 
-const buildStringline = (timings, stringlineHeader, stringline, state) => {
+const drawStringline = (timings, stringlineHeader, stringline, state) => {
   if(state.editingLine === undefined) {
     timings.style = "display: none;";
     
@@ -608,7 +608,7 @@ function main() {
   stringline.height = stringlineCanvasSize.height;
   
   const editingLineChanged = () => {
-    buildStringline(timings, stringlineHeader, stringline, state);
+    drawStringline(timings, stringlineHeader, stringline, state);
   };
   
   const linesArea = document.getElementById("lines");
