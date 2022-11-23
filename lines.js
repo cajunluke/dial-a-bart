@@ -134,35 +134,35 @@ const lines = [{
   color: "#ffe802",
   segments: ["C", "E", "K", "M", "W", "Y"],
   headway: 15,
-  offset: [3, 10],
+  offset: [1, 11], // antc, sfia
   mcarDelay: false,
 }, {
   name: "Red",
   color: "#ec1c23",
   segments: ["R", "K", "M", "W"],
   headway: 15,
-  offset: [5, 10],
+  offset: [12, 3], // rich, mlbr
   mcarDelay: false,
 }, {
   name: "Green",
   color: "#4db947",
   segments: ["M", "AL", "A", "S"],
   headway: 15,
-  offset: [5, 10],
+  offset: [13, 3], // daly, bery
   mcarDelay: false,
 }, {
   name: "Orange",
   color: "#f8a51a",
   segments: ["R", "K", "AL", "A", "S"],
   headway: 15,
-  offset: [5, 10],
+  offset: [4, 0], // rich, bery
   mcarDelay: true,
 }, {
   name: "Blue",
   color: "#01aced",
   segments: ["M", "AL", "L"],
   headway: 15,
-  offset: [5, 10],
+  offset: [6, 14], // daly, dubl
   mcarDelay: false,
 }, {
   name: "Beige",
