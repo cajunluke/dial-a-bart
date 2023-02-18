@@ -40,7 +40,7 @@ const drawLines = (context, lines, state) => {
     context.lineWidth = isSelected ? 5 : 3;
     
     const points = line.stations.map(station => {
-      const { location, visitingLines, angle } = stations[station];
+      const { location, visitingLines, angle } = STATIONS[station];
       
       const point = convertPoint(location);
       
@@ -182,7 +182,7 @@ const drawMap = (map, state) => {
   context.clearRect(0, 0, mapCanvasSize.width, mapCanvasSize.height);
   
   // draw background
-  landforms.forEach(({ color, path }) => {
+  LANDFORMS.forEach(({ color, path }) => {
     context.beginPath();
     context.fillStyle = color;
     context.lineWidth = 0;
@@ -202,13 +202,13 @@ const drawMap = (map, state) => {
   });
   
   // draw lines
-  drawLines(context, lines, state);
+  drawLines(context, LINES, state);
   
   // draw station circles
   // if no selected segment, highlight nothing
-  const highlightStations = segments[state.selectedSegment]?.stations ?? [];
+  const highlightStations = SEGMENTS[state.selectedSegment]?.stations ?? [];
   
-  Object.entries(stations).forEach(([code, { location, angle }]) => {
+  Object.entries(STATIONS).forEach(([code, { location, angle }]) => {
     const { x, y } = convertPoint(location);
     
     // draw line to station text along station angle
@@ -275,7 +275,7 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
   // and one group for each of the segments
   // keep a reference to these for later lookup
   const colgroups = {};
-  Object.keys(segments).forEach(key => {
+  Object.keys(SEGMENTS).forEach(key => {
     const column = document.createElement("col");
     column.id = key;
     colgroup.append(column);
@@ -303,7 +303,7 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
     topHeader.append(header);
     
     header = document.createElement("th");
-    header.colSpan = Object.keys(segments).length;
+    header.colSpan = Object.keys(SEGMENTS).length;
     header.style = "background: white;";
     header.textContent = "Line Segments";
     topHeader.append(header);
@@ -313,7 +313,7 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
   // subheader, one for each segment
   const subheader = document.createElement("tr");
   
-  Object.entries(segments).forEach(([key, { name }]) => {
+  Object.entries(SEGMENTS).forEach(([key, { name }]) => {
     const anchor = document.createElement("a");
     anchor.textContent = key;
     anchor.title = name;
@@ -350,7 +350,7 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
   // lines in table body
   const tableBody = linesArea.querySelectorAll("table tbody")[0];
   
-  lines.forEach((line, index) => {
+  LINES.forEach((line, index) => {
     const row = document.createElement("tr");
     
     const sequence = document.createElement("td");
@@ -375,7 +375,7 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
     color.style = `background: ${line.color}30;`;
     row.append(color);
     
-    Object.keys(segments).forEach(segment => {
+    Object.keys(SEGMENTS).forEach(segment => {
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.disabled = true;
@@ -428,10 +428,10 @@ const drawStringline = (timings, stringlineHeader, stringline, state) => {
   
   context.clearRect(0, 0, stringlineCanvasSize.width, stringlineCanvasSize.height);
   
-  const line = lines[currentLineIndex];
+  const line = LINES[currentLineIndex];
     
   const terminals = [line.stations.at(0), line.stations.at(-1)]
-    .map(station => stations[station])
+    .map(station => STATIONS[station])
     .map(station => station.name)
     .sort()
     .join(" – ");
@@ -499,13 +499,13 @@ const drawStringline = (timings, stringlineHeader, stringline, state) => {
   const yResolution = yAxisHeight / yAxisInMinutes;
   
   const visitedStationsByOtherLineIndex = [];
-  for(let i = 0; i < lines.length; i++) {
+  for(let i = 0; i < LINES.length; i++) {
     // pre-fill array with objects
     visitedStationsByOtherLineIndex.push({});
   }
   
   line.runs[0].forEach(({ station, milepoint }) => {
-    stations[station].lines.forEach(lineIndex => {
+    STATIONS[station].lines.forEach(lineIndex => {
       if(lineIndex !== currentLineIndex) {
         visitedStationsByOtherLineIndex[lineIndex][station] = milepoint;
       }
@@ -519,7 +519,7 @@ const drawStringline = (timings, stringlineHeader, stringline, state) => {
     }
     
     // draw other line's stringline
-    const otherLine = lines[lineIndex];
+    const otherLine = LINES[lineIndex];
     
     context.beginPath();
     

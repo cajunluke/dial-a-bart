@@ -15,7 +15,7 @@
  * Note that the H line is the automated guideway airtrain, and is largely 
  * ancillary to the system as a whole; it is included here for completeness.
  */
-const segments = {
+const SEGMENTS = {
   AL: {
     // These stations are all A line stations, but I split them off for convenience
     name: "Alameda/Livermore Interline",
@@ -129,7 +129,7 @@ const segments = {
  * • `lineDuration`: number
  *      Precomputed full line runtime in minutes
  */
-const lines = [{
+const LINES = [{
   name: "Yellow",
   color: "#ffe802",
   segments: ["C", "E", "K", "M", "W", "Y"],
@@ -174,9 +174,9 @@ const lines = [{
 }];
 
 function precomputeStations() {
-  lines.forEach(line => {
+  LINES.forEach(line => {
     const lineStations = line.segments
-                             .map(segment => segments[segment])
+                             .map(segment => SEGMENTS[segment])
                              .flatMap(segment => segment.stations);
     
     // need to find an endpoint and sort stations along line
@@ -195,7 +195,7 @@ function precomputeStations() {
     // this will be the first endpoint we find
     let endpoint = undefined;
     lineStations.forEach(station => {
-      const { links = [] } = stations[station];
+      const { links = [] } = STATIONS[station];
       
       if(links.length === 0) {
         // not sure how we got here; go to next
@@ -276,7 +276,7 @@ function precomputeStations() {
     for(let i = 1; i < line.stations.length; i++) {
       const currentStation = line.stations[i];
       
-      const { links } = stations[prevStation];
+      const { links } = STATIONS[prevStation];
       
       // get the link from the previous station to the current station
       const [{ time, distance }, ] = links.filter(({ station }) => station === currentStation);
@@ -354,15 +354,15 @@ function precomputeStations() {
     });
   });
   
-  Object.values(stations).forEach(station => {
+  Object.values(STATIONS).forEach(station => {
     station.lines = [];
   });
   
-  lines.forEach((line, index) => {
+  LINES.forEach((line, index) => {
     line.stations.forEach(station => {
-      const { visitingLines = 0 } = stations[station];
+      const { visitingLines = 0 } = STATIONS[station];
       
-      const visitedStation = stations[station];
+      const visitedStation = STATIONS[station];
       visitedStation.visitingLines = visitingLines + 1;
       visitedStation.lines.push(index);
     });

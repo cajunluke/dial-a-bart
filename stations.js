@@ -19,7 +19,7 @@
  * • `lines`: array of numbers
  •      Each number is the index of a line that visits this station
  */
-const stations = {
+const STATIONS = {
   ["12th"]: {
     name: "12th St. Oakland City Center",
     links: [
@@ -475,7 +475,7 @@ const stations = {
 };
 
 function verifyStations() {
-  for (const [code, { name, links, angle }] of Object.entries(stations)) {
+  for (const [code, { name, links, angle }] of Object.entries(STATIONS)) {
     if(angle % 45 !== 0) {
       console.log(`${name} (${code}) has invalid angle "${angle}"`);
     }
@@ -483,12 +483,12 @@ function verifyStations() {
     links.forEach(link => {
       const outbound = link.station;
       
-      if(!stations[outbound]) {
+      if(!STATIONS[outbound]) {
         // bad outbound link
         console.log(`${name} (${code}) has invalid link to "${outbound}"`);
       } else {
         // verify inbound link
-        const other = stations[outbound];
+        const other = STATIONS[outbound];
         
         let foundLink = false;
         other.links.forEach(inlink => {

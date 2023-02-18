@@ -4,7 +4,7 @@ const landColor = "#ffffff";
 /**
  * points and colors describing regions of the map to be drawn
  */
-const landforms = [{
+const LANDFORMS = [{
   name: "bay area",
   color: waterColor,
   path: [
