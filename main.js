@@ -434,8 +434,6 @@ const buildStringline = (timings, stringlineHeader, stringline, state) => {
     .sort()
     .join(" – ");
   
-  console.table(terminals);
-  
   const header = stringlineHeader.querySelectorAll("#lineID")[0];
   header.innerText = `${line.name} Line   (${terminals})`;
   stringlineHeader.style = `background: ${line.color}50;`;
