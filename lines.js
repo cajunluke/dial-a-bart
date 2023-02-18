@@ -128,6 +128,12 @@ const SEGMENTS = {
  *      Precomputed full line length in kilometers
  * • `lineDuration`: number
  *      Precomputed full line runtime in minutes
+ *
+ * And these match the other computed keys but in reverse
+ * • `istations`: array of strings
+ *      The stations this line runs through in the "reverse" direction
+ * • `iruns`: array of arrays of { station: string, milepoint: number, minute: number }
+ *      The same thing as `runs`, but in the reverse direction
  */
 const LINES = [{
   name: "Yellow",
@@ -253,19 +259,17 @@ const buildStations = (line) => {
   return stations;
 };
 
-const computeLine = line => {
-  // build station list and populate inverse
-  line.stations = buildStations(line);
-  
-  // compute runs based on stations, headway, and duration
-  
-  line.stationAxisLabels = [];
+/**
+ * compute a baseline run based on the provided station list
+ */
+const computeBaselineRun = (stations, mcarDelay) => {
+  const stationAxisLabels = [];
   const waypoints = [];
   
   let lineLength = 0;
   let lineDuration = 0;
   
-  let prevStation = line.stations[0];
+  let prevStation = stations[0];
   
   // start at origin
   waypoints.push({
@@ -274,13 +278,13 @@ const computeLine = line => {
     minute: 0,
   });
   
-  line.stationAxisLabels.push({
+  stationAxisLabels.push({
     label: prevStation,
     milepoint: 0,
   });
   
-  for(let i = 1; i < line.stations.length; i++) {
-    const currentStation = line.stations[i];
+  for(let i = 1; i < stations.length; i++) {
+    const currentStation = stations[i];
     
     const { links } = STATIONS[prevStation];
     
@@ -290,17 +294,17 @@ const computeLine = line => {
     lineLength += distance;
     lineDuration += time;
     
-    line.stationAxisLabels.push({
+    stationAxisLabels.push({
       label: currentStation,
       milepoint: lineLength,
     });
     
     // station arrival (for non-terminal stations)
-    if(i < line.stations.length - 1) {
+    if(i < stations.length - 1) {
       // if this isn't the last station, subtract dwell time and add another point for that
       
       let dwell = .5;
-      if(prevStation !== "19th" && currentStation === "mcar" && line.mcarDelay) {
+      if(prevStation !== "19th" && currentStation === "mcar" && mcarDelay) {
         // this is the orange line, delay it by 3 minutes
         // (only valid southbound)
         
@@ -326,35 +330,85 @@ const computeLine = line => {
     prevStation = currentStation;
   }
   
-  // stick computed length and duration in line data
-  line.lineLength = lineLength;
-  line.lineDuration = lineDuration;
-  
-  // find all the runs that show at all in the chart area
-  // the lower bound is the earliest run that ends in the chart area
-  //   • this is the run that starts after T-(lineDuration) minutes
-  // the upper bound is the latest run that starts in the chart area
-  //   • this is the run that starts before T+yAxisInMinutes minutes
-  
+  return {
+    waypoints,
+    stationAxisLabels,
+    lineLength,
+    lineDuration,
+  };
+};
+
+/**
+ * find all the runs that show in the chart area
+ * the lower bound is the earliest run that ends in the chart area
+ *   • this is the run that starts after T-(lineDuration) minutes
+ * the upper bound is the latest run that starts in the chart area
+ *   • this is the run that starts before T+yAxisInMinutes minutes
+ */
+const computeRunStarts = (baseOffset, lineDuration, headway) => {
   const runStarts = [];
   
-  // TODO use other offset for reverse direction
-  const baseOffset = line.offset[0];
-  
-  // find the runs between T0 and T+yAxisInMinutes
-  for(let s = baseOffset; s < yAxisInMinutes; s += line.headway) {
+  // find the runs between T+0 and T+yAxisInMinutes
+  for(let s = baseOffset; s < yAxisInMinutes; s += headway) {
     runStarts.push(s);
   }
-  // find the runs between T0 and T-(lineDuration)
-  for(let s = baseOffset - line.headway; s > -lineDuration; s -= line.headway) {
+  // find the runs between T+0 and T-(lineDuration)
+  for(let s = baseOffset - headway; s > -lineDuration; s -= headway) {
     runStarts.push(s);
   }
   
   // for neatness, keep them in order
   runStarts.sort((a, b) => a - b);
   
+  return runStarts;
+};
+
+const computeLine = line => {
+  // build station list
+  line.stations = buildStations(line);
+  
+  // clone stations and reverse
+  line.istations = [...line.stations];
+  line.istations.reverse();
+  
+  // compute "standard" direction data
+  
+  const {
+    waypoints,
+    stationAxisLabels,
+    lineLength,
+    lineDuration,
+  } = computeBaselineRun(line.stations, line.mcarDelay);
+  
+  // stick computed labels, length, and duration in line data
+  line.stationAxisLabels = stationAxisLabels;
+  line.lineLength = lineLength;
+  line.lineDuration = lineDuration;
+  
+  const runStarts = computeRunStarts(line.offset[0], lineDuration, line.headway);
+  
   line.runs = runStarts.map(startPoint => {
     return waypoints.map(({ station, milepoint, minute }) => {
+      return { station, milepoint, minute: minute + startPoint };
+    });
+  });
+  
+  // compute "reverse" direction data
+  
+  const {
+    waypoints: iwaypoints,
+    ...otherData
+  } = computeBaselineRun(line.istations, line.mcarDelay);
+  
+  // verify that the line is the same length in each direction
+  if(lineLength - otherData.lineLength > .01) {
+    throw `Line lengths are inconsistent between baseline run directions; they differ by ${lineLength - otherData.lineLength} km`;
+  }
+  
+  const irunStarts = computeRunStarts(line.offset[1], lineDuration, line.headway);
+
+  line.iruns = irunStarts.map(startPoint => {
+    return iwaypoints.map(({ station, milepoint, minute }) => {
       return { station, milepoint, minute: minute + startPoint };
     });
   });
