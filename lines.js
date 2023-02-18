@@ -173,186 +173,195 @@ const LINES = [{
   mcarDelay: false,
 }];
 
-function precomputeStations() {
-  LINES.forEach(line => {
-    const lineStations = line.segments
-                             .map(segment => SEGMENTS[segment])
-                             .flatMap(segment => segment.stations);
+const buildStations = (line) => {
+  const lineStations = line.segments
+                           .map(segment => SEGMENTS[segment])
+                           .flatMap(segment => segment.stations);
+  
+  // need to find an endpoint and sort stations along line
+  
+  // pre-populate `nodes` with objects for each station
+  const nodes = {};
+  lineStations.forEach(station => {
+    nodes[station] = {
+      adjacent: [],
+    };
+  });
+  
+  // bart doesn't have cycles, so I didn't bother checking for that
+  // also *one* of the ends has to be a terminal station, so no trying to simulate short-turns like 24th-pctr
+  
+  // this will be the first endpoint we find
+  let endpoint = undefined;
+  lineStations.forEach(station => {
+    const { links = [] } = STATIONS[station];
     
-    // need to find an endpoint and sort stations along line
-    
-    // pre-populate `nodes` with objects for each station
-    const nodes = {};
-    lineStations.forEach(station => {
-      nodes[station] = {
-        adjacent: [],
-      };
-    });
-    
-    // bart doesn't have cycles, so I didn't bother checking for that
-    // also *one* of the ends has to be a terminal station, so no trying to simulate short-turns like 24th-pctr
-    
-    // this will be the first endpoint we find
-    let endpoint = undefined;
-    lineStations.forEach(station => {
-      const { links = [] } = STATIONS[station];
-      
-      if(links.length === 0) {
-        // not sure how we got here; go to next
-        return;
-      }
-      
-      if(links.length === 1 && endpoint === undefined) {
-        // this is a terminal station and we haven't found an endpoint yet; this is our end
-        endpoint = station;
-      }
-      
-      links.forEach(link => {
-        // if this link is in the station list
-        if(nodes[link.station]) {
-          nodes[station].adjacent.push(link.station);
-        }
-      });
-    });
-    
-    if(endpoint === undefined) {
-      throw `A line endpoint was not found for ${line.name}! You may have tried to declare a short-turn line.`;
+    if(links.length === 0) {
+      // not sure how we got here; go to next
+      return;
     }
     
-    // our output data structure
-    line.stations = [];
+    if(links.length === 1 && endpoint === undefined) {
+      // this is a terminal station and we haven't found an endpoint yet; this is our end
+      endpoint = station;
+    }
     
-    // the endpoint comes first
-    line.stations.push(endpoint);
+    links.forEach(link => {
+      // if this link is in the station list
+      if(nodes[link.station]) {
+        nodes[station].adjacent.push(link.station);
+      }
+    });
+  });
+  
+  if(endpoint === undefined) {
+    throw `A line endpoint was not found for ${line.name}! You may have tried to declare a short-turn line.`;
+  }
+  
+  // output data structure
+  const stations = [];
+  
+  // the endpoint comes first
+  stations.push(endpoint);
+  
+  // declare it to be our initial node
+  let currentNode = nodes[endpoint];
+  // and remove it from the nodes collection
+  delete nodes[endpoint];
+  
+  // while nodes reamin, find the next node and travel there
+  while(Object.keys(nodes).length > 0) {
+    const availables = currentNode.adjacent.filter(link => Object.keys(nodes).includes(link));
+    const nextStation = availables[0];
     
-    // declare it to be our initial node
-    let currentNode = nodes[endpoint];
+    // put this as the next station in the list
+    stations.push(nextStation);
+    
+    // set it as next node
+    currentNode = nodes[nextStation];
     // and remove it from the nodes collection
-    delete nodes[endpoint];
+    delete nodes[nextStation];
+  }
+  
+  // normalize line direction
+  const [firstStation, ] = stations;
+  if(firstStation === "dubl" || firstStation === "bery") {
+    // blue and green should start at daly even if they don't want to
+    stations.reverse();
+  }
+  
+  return stations;
+};
+
+const computeLine = line => {
+  // build station list and populate inverse
+  line.stations = buildStations(line);
+  
+  // compute runs based on stations, headway, and duration
+  
+  line.stationAxisLabels = [];
+  const waypoints = [];
+  
+  let lineLength = 0;
+  let lineDuration = 0;
+  
+  let prevStation = line.stations[0];
+  
+  // start at origin
+  waypoints.push({
+    station: prevStation,
+    milepoint: 0,
+    minute: 0,
+  });
+  
+  line.stationAxisLabels.push({
+    label: prevStation,
+    milepoint: 0,
+  });
+  
+  for(let i = 1; i < line.stations.length; i++) {
+    const currentStation = line.stations[i];
     
-    // while nodes reamin, find the next node and travel there
-    while(Object.keys(nodes).length > 0) {
-      const availables = currentNode.adjacent.filter(link => Object.keys(nodes).includes(link));
-      const nextStation = availables[0];
-      
-      // put this as the next station in the list
-      line.stations.push(nextStation);
-      
-      // set it as next node
-      currentNode = nodes[nextStation];
-      // and remove it from the nodes collection
-      delete nodes[nextStation];
-    }
+    const { links } = STATIONS[prevStation];
     
-    // normalize line direction
-    const firstStation = line.stations[0];
-    if(firstStation === "dubl" || firstStation === "bery") {
-      // blue and green should start at daly even if they don't want to
-      line.stations.reverse();
-    }
+    // get the link from the previous station to the current station
+    const [{ time, distance }, ] = links.filter(({ station }) => station === currentStation);
     
-    // compute runs based on stations, headway, and duration
-    
-    line.stationAxisLabels = [];
-    const waypoints = [];
-    
-    let lineLength = 0;
-    let lineDuration = 0;
-    
-    let prevStation = line.stations[0];
-    
-    // start at origin
-    waypoints.push({
-      station: prevStation,
-      milepoint: 0,
-      minute: 0,
-    });
+    lineLength += distance;
+    lineDuration += time;
     
     line.stationAxisLabels.push({
-      label: prevStation,
-      milepoint: 0,
+      label: currentStation,
+      milepoint: lineLength,
     });
     
-    for(let i = 1; i < line.stations.length; i++) {
-      const currentStation = line.stations[i];
+    // station arrival (for non-terminal stations)
+    if(i < line.stations.length - 1) {
+      // if this isn't the last station, subtract dwell time and add another point for that
       
-      const { links } = STATIONS[prevStation];
-      
-      // get the link from the previous station to the current station
-      const [{ time, distance }, ] = links.filter(({ station }) => station === currentStation);
-      
-      lineLength += distance;
-      lineDuration += time;
-      
-      line.stationAxisLabels.push({
-        label: currentStation,
-        milepoint: lineLength,
-      });
-      
-      // station arrival (for non-terminal stations)
-      if(i < line.stations.length - 1) {
-        // if this isn't the last station, subtract dwell time and add another point for that
+      let dwell = .5;
+      if(prevStation !== "19th" && currentStation === "mcar" && line.mcarDelay) {
+        // this is the orange line, delay it by 3 minutes
+        // (only valid southbound)
         
-        let dwell = .5;
-        if(prevStation !== "19th" && currentStation === "mcar" && line.mcarDelay) {
-          // this is the orange line, delay it by 3 minutes
-          // (only valid southbound)
-          
-          // K line fourth bore _when_
-          dwell = 3;
-        }
-      
-        waypoints.push({
-          station: currentStation,
-          milepoint: lineLength,
-          minute: lineDuration - dwell,
-        });
+        // K line fourth bore _when_
+        dwell = 3;
       }
-      
-      // station departure (on schedule)
-      // (or arrival for terminal stations)
+    
       waypoints.push({
         station: currentStation,
         milepoint: lineLength,
-        minute: lineDuration,
+        minute: lineDuration - dwell,
       });
-      
-      prevStation = currentStation;
     }
     
-    // stick computed length and duration in line data
-    line.lineLength = lineLength;
-    line.lineDuration = lineDuration;
+    // station departure (on schedule)
+    // (or arrival for terminal stations)
+    waypoints.push({
+      station: currentStation,
+      milepoint: lineLength,
+      minute: lineDuration,
+    });
     
-    // find all the runs that show at all in the chart area
-    // the lower bound is the earliest run that ends in the chart area
-    //   • this is the run that starts after T-(lineDuration) minutes
-    // the upper bound is the latest run that starts in the chart area
-    //   • this is the run that starts before T+yAxisInMinutes minutes
-        
-    const runStarts = [];
-    
-    // TODO use other offset for reverse direction
-    const baseOffset = line.offset[0];
-    
-    // find the runs between T0 and T+yAxisInMinutes
-    for(let s = baseOffset; s < yAxisInMinutes; s += line.headway) {
-      runStarts.push(s);
-    }
-    // find the runs between T0 and T-(lineDuration)
-    for(let s = baseOffset - line.headway; s > -lineDuration; s -= line.headway) {
-      runStarts.push(s);
-    }
-    
-    // for neatness, keep them in order
-    runStarts.sort((a, b) => a - b);
-    
-    line.runs = runStarts.map(startPoint => {
-      return waypoints.map(({ station, milepoint, minute }) => {
-        return { station, milepoint, minute: minute + startPoint };
-      });
+    prevStation = currentStation;
+  }
+  
+  // stick computed length and duration in line data
+  line.lineLength = lineLength;
+  line.lineDuration = lineDuration;
+  
+  // find all the runs that show at all in the chart area
+  // the lower bound is the earliest run that ends in the chart area
+  //   • this is the run that starts after T-(lineDuration) minutes
+  // the upper bound is the latest run that starts in the chart area
+  //   • this is the run that starts before T+yAxisInMinutes minutes
+  
+  const runStarts = [];
+  
+  // TODO use other offset for reverse direction
+  const baseOffset = line.offset[0];
+  
+  // find the runs between T0 and T+yAxisInMinutes
+  for(let s = baseOffset; s < yAxisInMinutes; s += line.headway) {
+    runStarts.push(s);
+  }
+  // find the runs between T0 and T-(lineDuration)
+  for(let s = baseOffset - line.headway; s > -lineDuration; s -= line.headway) {
+    runStarts.push(s);
+  }
+  
+  // for neatness, keep them in order
+  runStarts.sort((a, b) => a - b);
+  
+  line.runs = runStarts.map(startPoint => {
+    return waypoints.map(({ station, milepoint, minute }) => {
+      return { station, milepoint, minute: minute + startPoint };
     });
   });
+};
+
+function precomputeStations() {
+  LINES.forEach(computeLine);
   
   Object.values(STATIONS).forEach(station => {
     station.lines = [];
