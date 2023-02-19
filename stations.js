@@ -2,7 +2,7 @@
  * The (2022-current) list of BART's stations
  * 
  * This is an object; the keys are the station codes used by BART and extensively in this application.
- * The values are objects with these keys:
+ * The values are objects with these statically configured attributes:
  * • `name`: string
  *      The station's full display name
  * • `links`: array of { station: string, time: number, distance: number }
@@ -14,8 +14,12 @@
  *      The location of the station on the map (measured off the official BART map Nov 2022)
  * • `angle`: number
  *      The angle the line to the station name should be at; this also affects the track line adjacency
+ *
+ * These other attributes are computed based on the lines that visit these stations:
+ * • `lines`: array of numbers
+ •      Each number is the index of a line that visits this station
  */
-const stations = {
+const STATIONS = {
   ["12th"]: {
     name: "12th St. Oakland City Center",
     links: [
@@ -471,7 +475,7 @@ const stations = {
 };
 
 function verifyStations() {
-  for (const [code, { name, links, angle }] of Object.entries(stations)) {
+  for (const [code, { name, links, angle }] of Object.entries(STATIONS)) {
     if(angle % 45 !== 0) {
       console.log(`${name} (${code}) has invalid angle "${angle}"`);
     }
@@ -479,12 +483,12 @@ function verifyStations() {
     links.forEach(link => {
       const outbound = link.station;
       
-      if(!stations[outbound]) {
+      if(!STATIONS[outbound]) {
         // bad outbound link
         console.log(`${name} (${code}) has invalid link to "${outbound}"`);
       } else {
         // verify inbound link
-        const other = stations[outbound];
+        const other = STATIONS[outbound];
         
         let foundLink = false;
         other.links.forEach(inlink => {
