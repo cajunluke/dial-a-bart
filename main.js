@@ -413,6 +413,78 @@ const buildTable = (linesArea, state, repaint, editingLineChanged) => {
   });
 };
 
+const traceLinesBetweenPoints = (context, points) => {
+  const [firstPoint, ...otherPoints] = points;
+  
+  context.moveTo(firstPoint.x, firstPoint.y);
+  
+  otherPoints.forEach(({ x, y }) => {
+    context.lineTo(x, y);
+  });
+};
+
+/**
+ * Get the run that intersects the selected line in the correct direction
+ */
+const findDirectionalRun = (controlStations, dirA, dirB) => {
+  // get an iterator for the selected line's stations
+  const stationIterator = controlStations.values();
+  
+  const { stations: aStations } = dirA;
+  const { stations: bStations } = dirB;
+  
+  // fast-forward along the main line to the intersection with this line
+  // the choice of "aStations" here is arbitrary
+  let searchStation;
+  for(const station of stationIterator) {
+    if(aStations.includes(station)) {
+      searchStation = station;
+      break;
+    }
+  }
+  
+  // clone the station arrays as we're going to modify them
+  const aStas = [...aStations];
+  const bStas = [...bStations];
+  
+  for(let i = 0; i < aStas.length; i++) {
+    let searchNext = false;
+    if(aStas[i] === searchStation) {
+      searchNext = true;
+    } else {
+      delete aStas[i];
+    }
+    
+    if(bStas[i] === searchStation) {
+      searchNext = true;
+    } else {
+      delete bStas[i];
+    }
+    
+    if(!searchNext) {
+      continue;
+    }
+    
+    const { value, done } = stationIterator.next();
+    if(done) {
+      break;
+    }
+    
+    searchStation = value;
+  }
+  
+  // get the count of truthy values
+  const countAs = aStas.filter(val => val).length;
+  const countBs = bStas.filter(val => val).length;
+  
+  // the direction with more stations remaining does in the same direction as the selection
+  if(countAs > countBs) {
+    return dirA;
+  } else {
+    return dirB;
+  }
+};
+
 const drawStringline = (timings, stringlineHeader, stringline, state) => {
   const currentLineIndex = state.editingLine;
   
@@ -521,12 +593,19 @@ const drawStringline = (timings, stringlineHeader, stringline, state) => {
     // draw other line's stringline
     const otherLine = LINES[lineIndex];
     
+    // get correct runs to draw
+    const { runs } = findDirectionalRun(
+      line.stations, 
+      { stations: otherLine.stations, runs: otherLine.runs }, 
+      { stations: otherLine.istations, runs: otherLine.iruns },
+    );
+    
     context.beginPath();
     
     context.strokeStyle = otherLine.color;
     context.lineWidth = 2;
     
-    otherLine.iruns.forEach(waypoints => {
+    runs.forEach(waypoints => {
       // draw only waypoints that are on the same segment as the edited line
       const cowaypoints = waypoints.filter(({ station }) => otherStations.hasOwnProperty(station));
       
@@ -545,41 +624,7 @@ const drawStringline = (timings, stringlineHeader, stringline, state) => {
         return { x, y };
       });
       
-      const [firstPoint, ...otherPoints] = points;
-      
-      context.moveTo(firstPoint.x, firstPoint.y);
-      
-      otherPoints.forEach(({ x, y }) => {
-        context.lineTo(x, y);
-      });
-    });
-    
-    otherLine.runs.forEach(waypoints => {
-      // draw only waypoints that are on the same segment as the edited line
-      const cowaypoints = waypoints.filter(({ station }) => otherStations.hasOwnProperty(station));
-      
-      // convert waypoints to coordinates
-      const points = cowaypoints.map(({ station, minute }) => {
-        // use editing line's milepoints
-        const milepoint = otherStations[station];
-        
-        // convert milepoint to x
-        const x = (milepoint * xResolution) + chartLeft;
-        
-        // convert minute to y
-        // time goes up, but the origin is top-left
-        const y = chartBottom - (minute * yResolution);
-        
-        return { x, y };
-      });
-      
-      const [firstPoint, ...otherPoints] = points;
-      
-      context.moveTo(firstPoint.x, firstPoint.y);
-      
-      otherPoints.forEach(({ x, y }) => {
-        context.lineTo(x, y);
-      });
+      traceLinesBetweenPoints(context, points);
     });
     
     context.stroke();
@@ -605,34 +650,7 @@ const drawStringline = (timings, stringlineHeader, stringline, state) => {
       return { x, y };
     });
     
-    const [firstPoint, ...otherPoints] = points;
-    
-    context.moveTo(firstPoint.x, firstPoint.y);
-    
-    otherPoints.forEach(({ x, y }) => {
-      context.lineTo(x, y);
-    });
-  });
-  line.iruns.forEach(waypoints => {
-    // convert waypoints to coordinates
-    const points = waypoints.map(({ milepoint, minute }) => {
-      // convert milepoint to x
-      const x = chartRight - (milepoint * xResolution);
-      
-      // convert minute to y
-      // time goes up, but the origin is top-left
-      const y = chartBottom - (minute * yResolution);
-      
-      return { x, y };
-    });
-    
-    const [firstPoint, ...otherPoints] = points;
-    
-    context.moveTo(firstPoint.x, firstPoint.y);
-    
-    otherPoints.forEach(({ x, y }) => {
-      context.lineTo(x, y);
-    });
+    traceLinesBetweenPoints(context, points);
   });
   
   context.stroke();
